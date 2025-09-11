@@ -17,6 +17,21 @@
     <input id="user_value" value="100"> 
     <button onclick="changeValue()">클릭</button>
 
+    <div>
+    값1: <input type="number" id="user1" value="0">
+    <select onchange="calculate()" name="" id="oper">
+        <option value="+">+</option>
+        <option value="-">-</option>
+        <option value="*">*</option>
+        <option value="/">/</option>
+    </select>
+    값2: <input type="number" id="user2" value="0">
+    <span>=></span>
+    결과: <input type="number" id="result" value="0">
+    </div>
+
+
+
     <script src="js/index.js"></script>
     <!-- <script src="js/variable.js"></script>
     <script src="js/test.js"></script>
