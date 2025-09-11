@@ -19,5 +19,16 @@ function calculate(){
         case '/':
         result = fisrt / last;
     }
+
+    if(opr == "+"){
+        result = fisrt + last; 
+    }else  if(opr == "-"){
+        result = fisrt - last; 
+    }else  if(opr == "*"){
+        result = fisrt * last; 
+    }else  if(opr == "/"){
+        result = fisrt / last; 
+    }
+    
     document.querySelector('#result').value = result;
 }
