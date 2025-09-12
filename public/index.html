@@ -7,11 +7,49 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
 </head>
+    <style>
+        div{
+            text-align: center;
+            margin: 0 auto;
+            width: 200px;
+        }
+
+
+        option{
+            text-align: center;
+        }
+        input{
+            margin: 5px;
+            text-align: center;
+        }
+    </style>
 <body>
-    <h3>오늘은 반복문, 함수, 이벤트</h3>
-    <!-- <script src="./js/2nd/for.js"></script>
-    <script src="./js/2nd/for2.js"></script> -->
+     <!-- <script src="./js/2nd/for.js"></script> -->
+    <!-- <script src="./js/2nd/for2.js"></script> -->
     <!-- <script src="./js/2nd/while.js"></script> -->
-    <script src="./js/2nd/while2.js"></script>
+    <!-- <script src="./js/2nd/while2.js"></script> -->
+    <!-- <script src="./js/2nd/function.js"></script> -->
+    <!-- <script src="./js/2nd/function2.js"></script> -->
+    <!-- <script src="./js/2nd/function3.js"></script> -->
+    <script src="js/2nd/todo.js"></script>
+
+    <div>
+         <h3>오늘은 반복문, 함수, 이벤트</h3>
+    <input type="number" id="user1" value="0"> 
+    <br>
+        <select name="" id="oper">
+        <option value="+">+</option>
+        <option value="-">-</option>
+        <option value="*">*</option>
+        <option value="/">/</option>
+    </select>
+    <br>
+    <input type="number" id="user2" value="0">
+    <br>
+    result : <input type="number" id="result" value="0">
+    <button onclick="cal(user1.value,user2.value)">결과</button>
+    </div>
+
 </body>
 </html>
+
