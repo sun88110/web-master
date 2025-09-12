@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=<device-width>, initial-scale=1.0">
+    <title>1일차</title>
+</head>
+<style>
+    h3#world{
+        color: red;
+    }
+</style>
+<body>
+    <h3 id="world">Hello, World</h3>
+    <h3 id="friend">Hello, Friend</h3>
+    점수:
+    <input id="user_value" value="100"> 
+    <button onclick="changeValue()">클릭</button>
+
+    <div>
+    값1: <input type="number" id="user1" value="0">
+    <select onchange="calculate()" name="" id="oper">
+        <option value="+">+</option>
+        <option value="-">-</option>
+        <option value="*">*</option>
+        <option value="/">/</option>
+    </select>
+    값2: <input type="number" id="user2" value="0">
+    <span>=></span>
+    결과: <input type="number" id="result" value="0">
+    </div>
+
+
+
+    <script src="./index.js"></script>
+    <!-- <script src="./variable.js"></script>
+    <script src="./test.js"></script>
+    <script src="./operator.js"></script>
+    <script src="./test2.js"></script>
+    <script src="./test3.js"></script> -->
+    <script src="./condition.js"></script>
+
+</body>
+</html>
