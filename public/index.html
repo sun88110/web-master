@@ -8,10 +8,13 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
 </head>
     <style>
+        h3{
+            text-align: center;
+        }
         div{
             text-align: center;
             margin: 0 auto;
-            width: 200px;
+            width: 300px;
         }
 
 
@@ -24,17 +27,17 @@
         }
     </style>
 <body>
-     <!-- <script src="./js/2nd/for.js"></script> -->
+    <!-- <script src="./js/2nd/for.js"></script> -->
     <!-- <script src="./js/2nd/for2.js"></script> -->
     <!-- <script src="./js/2nd/while.js"></script> -->
     <!-- <script src="./js/2nd/while2.js"></script> -->
     <!-- <script src="./js/2nd/function.js"></script> -->
     <!-- <script src="./js/2nd/function2.js"></script> -->
     <!-- <script src="./js/2nd/function3.js"></script> -->
-    <script src="js/2nd/todo.js"></script>
-
-    <div>
-         <h3>오늘은 반복문, 함수, 이벤트</h3>
+    <!-- <script src="./js/2nd/todo.js"></script> -->
+    <!-- <script src="./js/2nd/array.js"></script> -->
+    <!-- <div>
+        <h3>오늘은 반복문, 함수, 이벤트</h3>
     <input type="number" id="user1" value="0"> 
     <br>
         <select name="" id="oper">
@@ -48,8 +51,52 @@
     <br>
     result : <input type="number" id="result" value="0">
     <button onclick="cal(user1.value,user2.value)">결과</button>
+    </div> -->
+
+    <h3>2일차 : 반복문, 함수</h3>
+    <h3>3일차 : 이벤트 DOM </h3>
+    <div id=""student">
+        <table class="table">
+            <tbody>
+                <tr>
+                <th>학생번호</th>
+                <td><input type="text" id="student_no"></td>
+                </tr>
+                <tr>
+                    <th>학생이름</th>
+                    <td><input type="text" id="student_name"></td>
+                </tr>
+                <tr>
+                    <th>점수</th>
+                    <td><input type="number" id="score">
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="2" align="center">
+                        <button id="addBtn" class="btn btn-primary">등록</button>
+                        <button class="addBtn btn btn-secondary">수정</button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
     </div>
+    <div id="list">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>학생번호</th>
+                    <th>학생이름</th>
+                    <th>점수</th>
+                    <th>삭제</th>
+                </tr>
+            </thead>
+            <tbody>
 
+            </tbody>
+        </table>    
+    </div>
 </body>
+ <!-- <script src="./js/2nd/event.js"></script> -->
+<!-- <script src="./js/2nd/object.js"></script> -->
+    <script src="./js/3rd/text.js"></script>
 </html>
-
