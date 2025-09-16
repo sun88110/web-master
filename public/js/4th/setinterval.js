@@ -13,7 +13,7 @@ strAry.forEach(function(item, idx, ary){
     outer.appendChild(div);
 });
 
-let timing = 60;
+let timing = 5;
 
 //이벤트 (찾기 버튼 클릭하면 alert('클릭))
 document.querySelector('#search_word')
@@ -41,7 +41,7 @@ document.querySelector('#search_word')
 setInterval(function() {
     console.log(timing--);
     let esc = false;
-    if(timing <= 0 && document.querySelectorAll('div.inner').length > 0){
+    if(timing == 0 &&document.querySelectorAll('div.inner').length > 0){
         alert('실패!');
     }
     if(timing > 0 && document.querySelectorAll('div.inner').length == 0){
