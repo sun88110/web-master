@@ -19,9 +19,9 @@ document.querySelector('button#addBtn')
     document.querySelector('#list tbody').appendChild(tr);
 });
 
-for (let prop in students[0]){
-    console.log(prop, students[0][prop]);
-}
+// for (let prop in students[0]){
+//     console.log(prop, students[0][prop]);
+// }
 
 function createStdList() {
     //데이터 건수만큼 반복.`
