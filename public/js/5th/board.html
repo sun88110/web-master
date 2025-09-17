@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f7f9fc;
+            margin: 40px;
+            color: #333;
+        }
+
+        .data-container {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .data-container>div {
+            background-color: #ffffff;
+            border: 1px solid #e0e6ed;
+            border-radius: 8px;
+            padding: 16px 20px;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .data-container>div:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
+        }
+
+        .data-id {
+            display: inline-block;
+            font-weight: bold;
+            color: #6c63ff;
+            margin-right: 10px;
+        }
+
+        .data-title {
+            font-size: 1.1em;
+            font-weight: 500;
+            margin-right: 10px;
+        }
+
+        .data-author {
+            color: #555;
+            font-size: 0.95em;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            max-width: 400px;
+            margin: 30px auto;
+            padding: 20px;
+            background-color: #ffffff;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        }
+
+        form input[type="text"] {
+            padding: 10px 14px;
+            font-size: 1em;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        form input[type="text"]:focus {
+            border-color: #6c63ff;
+            box-shadow: 0 0 0 3px rgba(108, 99, 255, 0.2);
+            outline: none;
+        }
+
+        form button {
+            padding: 10px 16px;
+            font-size: 1em;
+            font-weight: bold;
+            color: white;
+            background-color: #6c63ff;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+        }
+
+        form button:hover {
+            background-color: #5548e2;
+        }
+    </style>
+
+</head>
+
+<body>
+    <div class="container">
+        <form method="post">
+            <input id = "A" type="text" name="title" placeholder="Enter title">
+            <input id = "B" type="text" name="author" placeholder="Enter author">
+            <button type="submit">추가</button>
+        </form>
+    </div>
+    <div class="data-container" id="data-container">
+        <div>
+            <span class="data-id">1</span>
+            <span class="data-title">Test</span>
+            <span class="data-author">user01</span>
+        </div>
+    </div>
+
+
+    <script src="./db.js"></script>
+</body>
+
+</html>

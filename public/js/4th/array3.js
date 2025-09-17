@@ -27,14 +27,14 @@ friends.forEach(function (item, idx, ary){
 // 1. 급여가 5000 이상의 사원출력 "이름, 급여"
 // 2. 남자사원들만 maleAry에 추가
 const maleAry = new Array();
-data.forEach(function(item, idx, ary){
-    // if(item.id > 5){
-    //     console.log(item);
-    // }
-    if(item.gender == "Male"){
-        maleAry.unshift(item); //역순 출력
-    }
-});
+// data.forEach(function(item, idx, ary){
+//     // if(item.id > 5){
+//     //     console.log(item);
+//     // }
+//     if(item.gender == "Male"){
+//         maleAry.unshift(item); //역순 출력
+//     }
+// });
 // sort 정렬
 maleAry.sort(function (a,b){
     if(a.id < b.id){
@@ -73,5 +73,7 @@ const json = `[{"id":1,"first_name":"Cherry","last_name":"Grandison","email":"cg
 {"id":14,"first_name":"Yul","last_name":"Enston","email":"yenstond@reddit.com","gender":"Male","ip_address":7841},
 {"id":15,"first_name":"Rayna","last_name":"Pagan","email":"rpagane@bbc.co.uk","gender":"Female","ip_address":6020}]`
 //json 문자열.
-const data = JSON.parse(json);
+const data = JSON.parse(json); // 파싱타입으로 변경
 console.log(data);
+const jsonObj = JSON.stringify(data); //문자열로 변경
+console.log(jsonObj);
