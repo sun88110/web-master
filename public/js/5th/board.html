@@ -94,6 +94,34 @@
         form button:hover {
             background-color: #5548e2;
         }
+
+        .comments {
+            margin-top: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            padding-top: 10px;
+            border-top: 1px solid #eee;
+        }
+
+        .comments>div {
+            background-color: #f9f9f9;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            padding: 10px 14px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
+        }
+
+        .comments-id {
+            font-weight: bold;
+            color: #ff6c6c;
+            margin-right: 8px;
+        }
+
+        .comments-content {
+            font-size: 0.95em;
+            color: #444;
+        }
     </style>
 
 </head>
@@ -101,8 +129,8 @@
 <body>
     <div class="container">
         <form method="post">
-            <input id = "A" type="text" name="title" placeholder="Enter title">
-            <input id = "B" type="text" name="author" placeholder="Enter author">
+            <input id="A" type="text" name="title" placeholder="Enter title">
+            <input id="B" type="text" name="author" placeholder="Enter author">
             <button type="submit">추가</button>
         </form>
     </div>
@@ -111,6 +139,17 @@
             <span class="data-id">1</span>
             <span class="data-title">Test</span>
             <span class="data-author">user01</span>
+            <!-- 댓글영역  -->
+            <div class="comments">
+                <div>
+                    <span class="comments-id">1</span>
+                    <span class="comments-content">첫 번째 댓글</span>
+                </div>
+                <div>
+                    <span class="comments-id">2</span>
+                    <span class="comments-content">두 번째 댓글</span>
+                </div>
+            </div>
         </div>
     </div>
 

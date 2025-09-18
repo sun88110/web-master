@@ -46,6 +46,49 @@ xhtp.onload = function () {
 function makeRow(post) {
     let fields = ['id', 'title', 'author'];
     let div = document.createElement('div');
+    // div에 클릭이벤트.
+    div.addEventListener('click', function () {
+        // 댓글목록을 가져와서 보여주기.
+        let id = post[fields[0]];
+        let ps = this;
+        showComments(id, ps);
+    })
+    for (let i = 0; i < fields.length; i++) {
+        let span = document.createElement('span');
+        span.classList.add(`data-${fields[i]}`);
+        span.innerHTML = post[fields[i]];
+        div.appendChild(span);
+    }
+    return div;
+}
+
+
+function showComments(id, ps) {
+    const xhtp = new XMLHttpRequest();
+    xhtp.open('get', 'http://localhost:3000/comments');
+    xhtp.send();
+    xhtp.onload = function () {
+        let data = JSON.parse(xhtp.responseText)
+        .filter(item => {
+            return item.postsId == id;
+        });
+        data.forEach(function (item, idx, ary) {
+            let div = document.createElement('div');
+            div = makeRow2(item);
+            ps.appendChild(div);
+        })
+    }
+}
+
+function makeRow2(post) {
+    let fields = ['id', 'content', 'postsId'];
+    let div = document.createElement('div');
+    // div에 클릭이벤트.
+    div.addEventListener('click', function () {
+        let id = post[fields[0]];
+        let ps = this;
+        showComments(id, ps);
+    })
     for (let i = 0; i < fields.length; i++) {
         let span = document.createElement('span');
         span.classList.add(`data-${fields[i]}`);
