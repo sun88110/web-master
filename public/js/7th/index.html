@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+body {
+    font-family: 'Segoe UI', sans-serif;
+    background: linear-gradient(to right, #ece9e6, #ffffff);
+    margin: 0;
+    padding: 40px 20px;
+    color: #333;
+}
+
+/* 제목 */
+h3 {
+    text-align: center;
+    color: #6c63ff;
+    margin-bottom: 20px;
+}
+
+/* 폼 바깥 div */
+body > div:first-of-type {
+    background-color: #ffffff;
+    border-radius: 12px;
+    padding: 24px;
+    max-width: 480px;
+    margin: 0 auto 30px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+
+/* 폼 */
+form {
+    display: flex;
+    flex-direction: column;
+}
+
+form label {
+    margin-top: 12px;
+    font-weight: 600;
+    color: #444;
+}
+
+form input[type="text"] {
+    padding: 10px 14px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 1em;
+    margin-top: 4px;
+    transition: border-color 0.3s ease;
+}
+
+form input[type="text"]:focus {
+    border-color: #6c63ff;
+    outline: none;
+}
+
+/* 저장 버튼 */
+form input[type="submit"] {
+    margin-top: 20px;
+    padding: 12px;
+    background-color: #6c63ff;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-weight: bold;
+    font-size: 1em;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+form input[type="submit"]:hover {
+    background-color: #574dcf;
+}
+
+/* 출력되는 학생 목록 */
+.data-container {
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+/* 각 학생 카드 */
+.data-container > div {
+    background-color: #ffffff;
+    border: 1px solid #e0e0e0;
+    border-radius: 10px;
+    padding: 16px 20px;
+    margin-bottom: 16px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+    transition: transform 0.2s ease;
+}
+
+.data-container > div:hover {
+    transform: translateY(-3px);
+}
+
+/* 각 데이터 항목 */
+.data-container span {
+    display: block;
+    margin-bottom: 6px;
+}
+
+/* 각각의 속성 스타일 */
+.data-sno {
+    font-weight: bold;
+    color: #4a4e69;
+}
+
+.data-sname {
+    font-size: 1.2em;
+    color: #22223b;
+    font-weight: 600;
+}
+
+.data-score {
+    color: #0077b6;
+    font-size: 1em;
+}
+    </style>
+
+</head>
+
+<body>
+    <h3>promise, ajax</h3>
+    <h3>학생 목록</h3>
+    <div class="">
+        <form action="">
+            <label for="sno">학생번호</label>
+            <input type="text" id="sno" />
+            <label for="sname">이름</label>
+            <input type="text" id="sname" />
+            <label for="score">점수</label>
+            <input type="text" id="score" />
+            <input type="submit" value="저장" />
+        </form>
+    </div>
+    <div class="data-container">
+    </div>
+    <!-- <script src="./ajax.js"></script> -->
+    <!-- <script src="./promise.js"></script> -->
+    <!-- <script src="./fetch.js"></script> -->
+    <script src="./storage.js"></script>
+    <!-- <div> -->
+    <!-- <span class="data-id">1</span>
+            <span class="data-title">Test</span>
+            <span class="data-author">user01</span> -->
+    <!-- 댓글영역  -->
+    <!-- <div class="comments">
+                <div>
+                    <span class="comments-id">1</span>
+                    <span class="comments-content">첫 번째 댓글</span>
+                </div>
+                <div>
+                    <span class="comments-id">2</span>
+                    <span class="comments-content">두 번째 댓글</span>
+                </div>
+            </div> -->
+    <!-- </div> -->
+</body>
+
+</html>

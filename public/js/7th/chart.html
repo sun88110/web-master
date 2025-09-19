@@ -1,0 +1,38 @@
+<html>
+  <head>
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    <script type="text/javascript">
+
+      let chartData = [['User','Point']];
+      // 비동기처리는 실행순서가 중요.
+      const xhtp = new XMLHttpRequest();
+      xhtp.open('get', 'http://localhost:3000/points');
+      xhtp.send()
+      xhtp.onload = function () {
+        //chartData에 값을 활용해서 처리하도록 처리순서를 만들기
+        let result = JSON.parse(xhtp.responseText);
+        result.forEach((item) => {
+          chartData.push([item.id, item.point]);
+        });
+
+      google.charts.load('current', {'packages':['corechart']});
+      google.charts.setOnLoadCallback(drawChart);
+      }
+
+      function drawChart() {
+
+        var data = google.visualization.arrayToDataTable(chartData);
+        var options = {
+          title: 'My Daily Activities'
+        };
+
+        var chart = new google.visualization.PieChart(document.getElementById('piechart'));
+
+        chart.draw(data, options);
+      }
+    </script>
+  </head>
+  <body>
+    <div id="piechart" style="width: 900px; height: 500px;"></div>
+  </body>
+</html>

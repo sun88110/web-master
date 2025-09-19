@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>로그인</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .login-container {
+            background-color: #fff;
+            padding: 40px;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            width: 300px;
+            text-align: center;
+        }
+
+        .login-container h2 {
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        .input-group {
+            margin-bottom: 15px;
+            text-align: left;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 5px;
+            color: #555;
+            font-weight: bold;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+            /* Ensures padding doesn't affect the width */
+        }
+
+        .login-btn {
+            width: 100%;
+            padding: 10px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            transition: background-color 0.3s ease;
+        }
+
+        .login-btn:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="login-container">
+        <h2>로그인</h2>
+        <form action="#">
+            <div class="input-group">
+                <label for="username">아이디</label>
+                <input type="text" id="username" name="username" required />
+            </div>
+            <div class="input-group">
+                <label for="password">비밀번호</label>
+                <input type="password" id="password" name="password" required />
+            </div>
+            <button type="submit" class="login-btn">로그인</button>
+        </form>
+    </div>
+    <script>
+        // 저장할 정보를  초기화하도록.
+        let students = [];
+        let products = [];
+        let members = [
+            {
+                id: "user01",
+                pass: "1111"
+            },
+            {
+                id: "user02",
+                pass: "2222"
+            },
+            {
+                id: "user03",
+                pass: "3333"
+            },
+        ];
+        localStorage.setItem("students", JSON.stringify(students));
+        localStorage.setItem("products", JSON.stringify(products));
+
+        document.querySelector(".login-btn")
+            .addEventListener('click', function (e) {
+                e.preventDefault();
+                let logID = document.getElementById("username").value;
+                let logPW = document.getElementById("password").value;
+
+                members.forEach((item) => {
+                    if(item.id == logID && item.pass == logPW){
+                        location.href = "index.html";
+                    }
+                });
+                
+          });
+    </script>
+</body>
+
+</html>
