@@ -57,13 +57,14 @@ fetch('http://localhost:3000/posts') // json문자열 데이터.
             let btn = document.createElement("button")
             btn.innerHTML= '배진욱꺼';
             btn.addEventListener('click', function(e){
-                console.log(e.target.parentElement.parentElement);
-                console.log(e.target.parentElement.parentElement.children[0].innerHTML);
-                fetch(`http://localhost:3000/posts/${e.target.parentElement.parentElement.children[0].innerHTML}`, {
-                    method:'Delete',
-                })
+                // console.log(e.target.parentElement.parentElement);
+                // console.log(e.target.parentElement.parentElement.children[0].innerHTML);
+                // fetch(`http://localhost:3000/posts/${e.target.parentElement.parentElement.children[0].innerHTML}`, {
+                //     method:'Delete',
+                // })
 
-                e.target.parentElement.parentElement.remove();
+                // e.target.parentElement.parentElement.remove();
+                del(e);
                 })
             span.appendChild(btn);
             div.appendChild(span);
@@ -71,6 +72,8 @@ fetch('http://localhost:3000/posts') // json문자열 데이터.
     }
 
     function del(e){
-        fetch(`http://localhost:3000/points/${e.target.parentElement.parentElement.children[0].innerHTML}`)
+        fetch(`http://localhost:3000/posts/${e.target.parentElement.parentElement.children[0].innerHTML}`,{
+            method: 'Delete',
+        })
         e.target.parentElement.parentElement.remove()
     }
