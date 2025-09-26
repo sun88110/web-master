@@ -1,5 +1,6 @@
-document.querySelector('button')
-    .addEventListener("click", function (e) {
+const form = document.querySelector('#register');
+form
+  .addEventListener('submit', function (e)  {
         e.preventDefault(); // 폼 제출 막기
 
         let id = document.querySelector('#user-id').value;
