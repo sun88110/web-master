@@ -1,0 +1,182 @@
+/* 기본 Reset */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  background-color: #f5f5f5;
+  color: #333;
+  padding: 30px;
+}
+
+.container {
+  max-width: 500px;
+  margin: 0 auto;
+  background: #fff;
+  padding: 25px;
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(0,0,0,0.1);
+}
+
+h1 {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.balance {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.add-transaction {
+  margin-bottom: 30px;
+}
+
+.add-transaction h3 {
+  margin-bottom: 10px;
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+}
+
+form input {
+  padding: 10px;
+  margin-bottom: 10px;
+  border: 1px solid #aaa;
+  border-radius: 4px;
+}
+
+form button {
+  padding: 10px;
+  background-color: #28a745;
+  color: white;
+  border: none;
+  cursor: pointer;
+  border-radius: 4px;
+}
+
+form button:hover {
+  background-color: #218838;
+}
+
+.transactions h3 {
+  margin-bottom: 10px;
+}
+
+#transaction-list {
+  list-style: none;
+}
+
+#transaction-list li {
+  padding: 10px;
+  border-bottom: 1px solid #ddd;
+}
+.add-transaction {
+  margin-top: 40px;
+  padding-top: 20px;
+  border-top: 1px solid #ccc;
+  text-align: left;
+}
+
+.add-transaction h3 {
+  margin-bottom: 15px;
+  font-size: 18px;
+  color: #444;
+}
+
+.add-transaction form {
+  display: flex;
+  flex-direction: column;
+}
+
+.add-transaction input {
+  padding: 10px;
+  margin-bottom: 12px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.add-transaction button {
+  padding: 10px;
+  background-color: #28a745;
+  color: white;
+  border: none;
+  cursor: pointer;
+  border-radius: 4px;
+}
+
+.add-transaction button:hover {
+  background-color: #218838;
+}
+/* 전체 레이아웃 */
+.layout-container {
+  display: flex;
+  max-width: 1200px;
+  margin: 30px auto;
+  gap: 20px;
+}
+
+/* 어사이드 영역 (왼쪽/오른쪽) */
+.sidebar {
+  flex: 1;
+  background: #f1f1f1;
+  padding: 20px;
+  border-radius: 8px;
+  height: fit-content;
+}
+
+.sidebar.left {
+  order: 1;
+}
+
+.sidebar.right {
+  order: 3;
+}
+
+/* 메인 콘텐츠 */
+.main-content {
+  flex: 2;
+  background: #fff;
+  padding: 25px;
+  border-radius: 8px;
+  box-shadow: 0 0 8px #ccc;
+  order: 2;
+}
+
+/* 예산 등록 폼 */
+#budget-form input {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 8px;
+}
+
+#budget-form button {
+  width: 100%;
+  padding: 10px;
+  background: #28a745;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+#budget-form button:hover {
+  background: #218838;
+}
+
+#budget-display {
+  margin-top: 10px;
+  font-size: 16px;
+}
+
+/* 평균 지출 정보 */
+.sidebar.right ul {
+  list-style: disc;
+  padding-left: 20px;
+  margin-top: 10px;
+}
