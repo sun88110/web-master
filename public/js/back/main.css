@@ -1,0 +1,380 @@
+/*
+====================================
+ 1. 기본 설정 및 초기화
+====================================
+*/
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700&display=swap');
+
+:root {
+  --color-primary: #4caf50;
+  /* 기본 버튼 색상 (녹색) */
+  --color-accent: #FF7043;
+  /* 강조 색상 (주황) */
+  --color-background: #f9f9f9;
+  /* 전체 배경 */
+  --color-surface: #fff;
+  /* 카드 배경 */
+  --color-text-dark: #333;
+  /* 어두운 텍스트 */
+  --color-text-light: #555;
+  /* 일반 텍스트 */
+  --color-border: #e0e0e0;
+  /* 옅은 경계선 */
+  --color-delete: #e74c3c;
+  /* 삭제 버튼 색상 */
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: "Noto Sans KR", sans-serif;
+  font-size: 18px;
+  background-color: var(--color-background);
+  line-height: 1.6;
+  padding: 20px;
+  /* 전체 여백 */
+  min-height: 100vh;
+  /* 뷰포트 전체 높이를 사용 */
+  display: flex;
+  /* 레이아웃 컨테이너를 중앙에 배치하기 위함 */
+  justify-content: center;
+  align-items: flex-start;
+  /* 콘텐츠가 위에서부터 시작하도록 설정 */
+}
+
+/*
+====================================
+ 2. 그리드 레이아웃 설정 (안정화)
+====================================
+*/
+
+.layout-container {
+  display: grid;
+  grid-template-columns: 1fr 2fr 1fr;
+  /* 좌/중앙/우 비율 */
+  gap: 30px;
+  /* 열 간 간격 */
+  max-width: 1400px;
+  /* 최대 너비 */
+  width: 100%;
+  /* max-width와 함께 사용하여 반응성 확보 */
+  align-items: start;
+  /* 그리드 항목들이 위에서부터 정렬 */
+}
+
+/*
+====================================
+ 3. 컴포넌트 스타일 (카드 형태)
+====================================
+*/
+
+.sidebar,
+.main-content {
+  background: var(--color-surface);
+  padding: 25px;
+  border-radius: 12px;
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.08);
+  /* 그림자 강화 */
+  height: fit-content;
+  /* 내용물 높이에 맞게 설정하여 Grid 깨짐 방지 */
+  color: var(--color-text-light);
+  /* 기본 텍스트 색상 */
+}
+
+.main-content {
+  padding: 30px;
+  /* 메인 콘텐츠는 조금 더 큰 padding */
+}
+
+.main-content section {
+  margin-bottom: 30px;
+  position: static;
+  /* 붕 뜸 현상 방지 */
+}
+
+h2,
+h3 {
+  font-size: 1.6em;
+  /* 제목 크기 조금 더 키움 */
+  margin-bottom: 15px;
+  color: var(--color-text-dark);
+  /* 제목은 진한 색 */
+}
+
+/*
+====================================
+ 4. 폼 요소 (Input, Select) 스타일
+====================================
+*/
+
+input[type="text"],
+input[type="number"],
+input[type="date"],
+select {
+  width: 100%;
+  padding: 16px 18px;
+  /* 상하 패딩 증가, 높이 키움 */
+  font-size: 18px;
+  /* 글자 크기 증가 */
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  box-sizing: border-box;
+  margin-bottom: 12px;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  background-color: var(--color-surface);
+  color: var(--color-text-dark);
+}
+
+input::placeholder {
+  color: #a0a0a0;
+  /* 플레이스홀더 색상 */
+}
+
+/* Select 태그의 기본 화살표 제거 및 커스텀 스타일 적용 */
+select {
+  padding-right: 35px;
+  /* 커스텀 화살표 공간 확보 */
+}
+
+/* Select Wrapper (커스텀 화살표 안정화) */
+.select-wrapper {
+  position: relative;
+  width: 100%;
+  margin-bottom: 12px;
+}
+
+.select-wrapper::after {
+  content: '▼';
+  /* 화살표 모양 유니코드 */
+  position: absolute;
+  top: 50%;
+  right: 15px;
+  transform: translateY(-50%);
+  pointer-events: none;
+  /* 화살표를 클릭해도 select 요소가 작동하도록 */
+  font-size: 0.8em;
+  color: var(--color-text-light);
+}
+
+/*
+====================================
+ 5. 버튼 스타일
+====================================
+*/
+
+/* 기본 버튼 (폼 내부의 '등록' 버튼들) */
+button[type="submit"] {
+  padding: 14px 18px;
+  font-size: 16px;
+  border-radius: 8px;
+  background: var(--color-primary);
+  color: white;
+  border: none;
+  cursor: pointer;
+  width: 100%;
+  box-sizing: border-box;
+  transition: background-color 0.2s, transform 0.1s;
+  margin-top: 5px;
+  font-weight: 700;
+}
+
+button[type="submit"]:hover {
+  background: #45a049;
+  transform: translateY(-2px);
+  /* 약간의 호버 효과 */
+}
+
+button[type="submit"]:active {
+  transform: translateY(0);
+}
+
+
+/* 마이페이지 버튼 (왼쪽 사이드바) */
+.mypage-btn {
+  background: var(--color-accent);
+  /* 주황색 강조 */
+  margin-top: 25px;
+  /* 예산 영역과 분리 */
+  padding: 12px 18px;
+  font-size: 16px;
+  border-radius: 8px;
+  color: white;
+  border: none;
+  cursor: pointer;
+  width: 100%;
+  box-sizing: border-box;
+  transition: background-color 0.2s, transform 0.1s;
+  font-weight: 700;
+}
+
+.mypage-btn:hover {
+  background: #E65100;
+  transform: translateY(-2px);
+}
+
+.mypage-btn:active {
+  transform: translateY(0);
+}
+
+
+/* 예산 표시 스타일 */
+#budget-display {
+  margin-top: 15px;
+  padding-top: 15px;
+  border-top: 1px dashed var(--color-border);
+  /* 옅은 경계선 */
+  font-size: 1.1em;
+  color: var(--color-text-dark);
+}
+
+
+/* **** 이 부분이 추가되었습니다: 로그아웃 버튼 (마이페이지 버튼 아래) **** */
+.logout-btn {
+    background: #909090; /* 회색 톤으로 설정 (강조색과 구분) */
+    margin-top: 10px; 
+    padding: 12px 18px;
+    font-size: 16px;
+    border-radius: 8px;
+    color: white;
+    border: none;
+    cursor: pointer;
+    width: 100%;
+    box-sizing: border-box;
+    transition: background-color 0.2s, transform 0.1s;
+    font-weight: 700;
+}
+
+.logout-btn:hover {
+    background: #777777;
+    transform: translateY(-2px);
+}
+.logout-btn:active {
+    transform: translateY(0);
+}
+
+
+/* 예산 표시 스타일 (생략) */
+#budget-display {
+    margin-top: 15px;
+    padding-top: 15px;
+    border-top: 1px dashed var(--color-border); 
+    font-size: 1.1em;
+    color: var(--color-text-dark);
+}
+/*
+====================================
+ 6. 거래 내역 섹션
+====================================
+*/
+
+/* 거래 내역 섹션 헤더 (제목과 버튼을 한 줄에 배치) */
+.transaction-list .list-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.transaction-list .list-header h3 {
+  margin-bottom: 0;
+}
+
+/* 전체 목록 조회 버튼 (강조색 사용) */
+.view-all-btn {
+  background: var(--color-accent);
+  padding: 8px 15px;
+  font-size: 0.9em;
+  width: auto;
+  margin-left: 15px;
+  border-radius: 8px;
+  transition: background-color 0.2s, transform 0.1s;
+  font-weight: 600;
+}
+
+.view-all-btn:hover {
+  background: #E65100;
+  transform: translateY(-2px);
+}
+
+.view-all-btn:active {
+  transform: translateY(0);
+}
+
+
+/* 거래 내역 목록 스타일 */
+#transactions {
+  list-style: none;
+  padding: 0;
+}
+
+#transactions li {
+  padding: 10px 0;
+  border-bottom: 1px dashed var(--color-border);
+  font-size: 1em;
+  color: var(--color-text-dark);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  /* 항목들 간의 간격 */
+}
+
+#transactions li:last-child {
+  border-bottom: none;
+}
+
+/* 거래 내역 항목 내부 요소 정렬 */
+#transactions li span {
+  white-space: nowrap;
+  /* 줄바꿈 방지 */
+  overflow: hidden;
+  text-overflow: ellipsis;
+  /* 넘치는 텍스트 ... 처리 */
+}
+
+/* 삭제 버튼 (거래 내역) */
+.delete-btn {
+  background: var(--color-delete);
+  /* 빨간색 */
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 6px 10px;
+  font-size: 0.85em;
+  cursor: pointer;
+  width: auto;
+  /* 내용물에 맞춰 크기 조절 */
+  transition: background-color 0.2s;
+}
+
+.delete-btn:hover {
+  background: #c0392b;
+}
+
+/* 연령대 평균 지출 목록 */
+.sidebar.right ul {
+  list-style: none;
+  padding: 0;
+  margin-top: 10px;
+}
+
+.sidebar.right ul li {
+  padding: 5px 0;
+  border-bottom: 1px dotted #eee;
+  color: var(--color-text-dark);
+}
+
+.sidebar.right ul li:last-child {
+  border-bottom: none;
+}
+
+.sidebar.right p {
+  margin-bottom: 10px;
+  color: var(--color-text-dark);
+}

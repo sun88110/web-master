@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8" />
+    <title>가계부 전체 내역 조회</title>
+    <link rel="stylesheet" href="main.css" />
+    <link rel="stylesheet" href="full_history.css" />
+</head>
+<body>
+    <div class="history-container">
+        <h2>가계부 전체 내역 조회</h2>
+
+        <section class="search-filter">
+            <form id="search-form">
+                
+                <input type="text" id="filter-description" placeholder="항목 (예: 커피, 월세 등)" />
+                
+                <div class="amount-range">
+                    <input type="number" id="filter-min-amount" placeholder="최소 금액" />
+                    <span>~</span>
+                    <input type="number" id="filter-max-amount" placeholder="최대 금액" />
+                </div>
+                
+                <div class="date-range">
+                    <input type="date" id="filter-from-date" title="시작 날짜" required />
+                    <span>~</span>
+                    <input type="date" id="filter-to-date" title="종료 날짜" required />
+                </div>
+                
+                <div class="select-wrapper">
+                    <select id="filter-category">
+                        <option value="" selected>카테고리 전체</option>
+                        <option value="식비">식비</option>
+                        <option value="교통">교통</option>
+                        <option value="생활">생활</option>
+                        <option value="주거">주거</option>
+                        <option value="통신">통신</option>
+                        <option value="의료">의료</option>
+                        <option value="교육">교육</option>
+                        <option value="저축">저축</option>
+                        <option value="쇼핑">쇼핑</option>
+                        <option value="기타">기타</option>
+                    </select>
+                </div>
+
+                <button type="submit" id="search-btn">조회</button>
+            </form>
+        </section>
+
+        <section class="full-transaction-list">
+            <div id="full-transactions-container">
+                <div class="transaction-item">
+                    <span class="item-details">가계부 거래 내역 (항목, 금액, 날짜)</span>
+                    <button class="delete-btn">삭제</button>
+                </div>
+                <div class="transaction-item">
+                    <span class="item-details">가계부 거래 내역 (항목, 금액, 날짜)</span>
+                    <button class="delete-btn">삭제</button>
+                </div>
+                </div>
+        </section>
+
+        <section class="pagination">
+            <div id="paging-controls">
+                <span>Page</span>
+                <button class="page-number current">1</button>
+                <button class="page-number">2</button>
+                <button class="page-number">3</button>
+                <span>/ 99</span>
+            </div>
+        </section>
+    </div>
+    <script src="full_history.js"></script>
+</body>
+</html>
