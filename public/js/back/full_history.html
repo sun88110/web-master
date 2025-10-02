@@ -2,74 +2,288 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="full_history.css">
     <title>가계부 전체 내역 조회</title>
-    <link rel="stylesheet" href="main.css" />
-    <link rel="stylesheet" href="full_history.css" />
+
 </head>
 <body>
     <div class="history-container">
         <h2>가계부 전체 내역 조회</h2>
 
+        <!-- 검색 필터 영역 -->
         <section class="search-filter">
             <form id="search-form">
                 
-                <input type="text" id="filter-description" placeholder="항목 (예: 커피, 월세 등)" />
+                <!-- 1. 내용 필터 -->
+                <input type="text" id="filter-description" placeholder="내용 (예: 커피, 월세 등)" />
                 
-                <div class="amount-range">
-                    <input type="number" id="filter-min-amount" placeholder="최소 금액" />
-                    <span>~</span>
-                    <input type="number" id="filter-max-amount" placeholder="최대 금액" />
-                </div>
+                <!-- 금액 범위 필터 제거 -->
                 
+                <!-- 2. 날짜 범위 필터 -->
                 <div class="date-range">
                     <input type="date" id="filter-from-date" title="시작 날짜" required />
                     <span>~</span>
                     <input type="date" id="filter-to-date" title="종료 날짜" required />
                 </div>
                 
+                <!-- 3. 카테고리 필터 -->
                 <div class="select-wrapper">
                     <select id="filter-category">
                         <option value="" selected>카테고리 전체</option>
                         <option value="식비">식비</option>
-                        <option value="교통">교통</option>
-                        <option value="생활">생활</option>
-                        <option value="주거">주거</option>
-                        <option value="통신">통신</option>
-                        <option value="의료">의료</option>
-                        <option value="교육">교육</option>
-                        <option value="저축">저축</option>
-                        <option value="쇼핑">쇼핑</option>
+                        <option value="교통/차량">교통/차량</option>
+                        <option value="월세/주거">월세/주거</option>
+                        <option value="급여">급여</option>
+                        <option value="용돈">용돈</option>
                         <option value="기타">기타</option>
                     </select>
                 </div>
 
+                <!-- 4. 조회 버튼 -->
                 <button type="submit" id="search-btn">조회</button>
             </form>
         </section>
 
+        <!-- 거래 내역 목록 -->
         <section class="full-transaction-list">
             <div id="full-transactions-container">
-                <div class="transaction-item">
-                    <span class="item-details">가계부 거래 내역 (항목, 금액, 날짜)</span>
-                    <button class="delete-btn">삭제</button>
+                <div class="transaction-item header" style="font-weight: 700; background-color: #f0f0f0; border-bottom: 2px solid var(--color-border);">
+                    <div class="item-details">
+                        <span class="tx-date">날짜</span>
+                        <span class="tx-description">내용</span>
+                        <span class="tx-category">카테고리</span>
+                        <span class="tx-amount">금액</span>
+                    </div>
+                    <span style="min-width: 60px; margin-left: 15px;">삭제</span>
                 </div>
-                <div class="transaction-item">
-                    <span class="item-details">가계부 거래 내역 (항목, 금액, 날짜)</span>
-                    <button class="delete-btn">삭제</button>
+                <div id="transaction-list-body" style="min-height: 200px;">
+                    <!-- JavaScript로 내역이 로드됩니다 -->
+                    <div class="transaction-item">내역을 로드 중입니다...</div>
                 </div>
-                </div>
+            </div>
         </section>
 
+        <!-- 페이지네이션 -->
         <section class="pagination">
             <div id="paging-controls">
-                <span>Page</span>
-                <button class="page-number current">1</button>
-                <button class="page-number">2</button>
-                <button class="page-number">3</button>
-                <span>/ 99</span>
+                <!-- JavaScript로 페이지네이션 버튼이 로드됩니다 -->
             </div>
         </section>
     </div>
-    <script src="full_history.js"></script>
+
+    <script>
+        // ----------------------------------------------------
+        // [Node.js/Oracle 환경] 상수 및 전역 변수 설정
+        // ----------------------------------------------------
+        const BASE_API_URL = 'http://localhost:3000/api/transactions'; 
+        const USER_ID = 'user123'; // Node.js server.js와 동일한 Mock ID 사용
+        const ITEMS_PER_PAGE = 10;
+        
+        let currentPage = 1;
+
+        // --- 유틸리티 함수 ---
+        const formatCurrency = (amount) => {
+            return new Intl.NumberFormat('ko-KR', { style: 'currency', currency: 'KRW' }).format(amount);
+        };
+        const getTodayDate = () => {
+            return new Date().toISOString().substring(0, 10);
+        };
+
+        // --- 핵심 기능: 내역 조회 ---
+        async function fetchHistory(page = 1) {
+            const container = document.getElementById('transaction-list-body');
+            const pagingControls = document.getElementById('paging-controls');
+            container.innerHTML = '<div class="transaction-item">데이터를 서버에서 조회 중입니다...</div>';
+            pagingControls.innerHTML = '';
+            
+            currentPage = page;
+
+            // 1. 필터 값 수집
+            const fromDate = document.getElementById('filter-from-date').value;
+            const toDate = document.getElementById('filter-to-date').value;
+            const description = document.getElementById('filter-description').value.trim();
+            const category = document.getElementById('filter-category').value;
+            // 최소/최대 금액 필드가 제거되었으므로 관련 코드를 삭제합니다.
+            
+            // 유효성 검사
+            if (!fromDate || !toDate) {
+                container.innerHTML = '<div class="transaction-item">날짜 범위를 선택해 주세요.</div>';
+                return;
+            }
+
+            // 2. 서버로 전송할 필터 객체 구성
+            const filters = {
+                userId: USER_ID,
+                fromDate: fromDate,
+                toDate: toDate,
+                description: description || null,
+                category: category || null,
+                // minAmount, maxAmount 필드 제거
+                page: page,
+                limit: ITEMS_PER_PAGE
+            };
+
+            try {
+                const response = await fetch(`${BASE_API_URL}/history`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(filters)
+                });
+                
+                if (!response.ok) throw new Error(`HTTP Error: ${response.status}`);
+
+                const data = await response.json();
+
+                if (data.success && data.transactions) {
+                    // 서버 응답 (totalCount, transactions)을 기반으로 화면 렌더링
+                    const totalCount = data.totalCount || 0;
+                    const transactions = data.transactions.map(tx => ({
+                        id: tx.id,
+                        date: tx.date,
+                        category: tx.category,
+                        description: tx.description,
+                        // 오라클 AMOUNT는 수입(양수), 지출(음수)로 관리 가정
+                        amount: Math.abs(tx.amount), 
+                        type: tx.amount > 0 ? 'income' : 'expense'
+                    }));
+
+                    renderTransactions(transactions);
+                    
+                    const totalPages = Math.ceil(totalCount / ITEMS_PER_PAGE);
+                    renderPagination(page, totalPages);
+
+                } else {
+                    container.innerHTML = `<div class="transaction-item">서버 응답 오류: ${data.message || '데이터를 가져오지 못했습니다.'}</div>`;
+                    renderPagination(1, 1);
+                }
+
+            } catch (error) {
+                console.error("거래 내역 로드 실패:", error);
+                container.innerHTML = '<div class="transaction-item">서버 연결 실패. Node.js 서버(http://localhost:3000)를 실행했는지 확인하세요.</div>';
+                renderPagination(1, 1);
+            }
+        }
+        
+        // --- 화면 렌더링 ---
+        function renderTransactions(transactions) {
+            const listBody = document.getElementById('transaction-list-body');
+            listBody.innerHTML = ''; 
+
+            if (transactions.length === 0) {
+                listBody.innerHTML = '<div class="transaction-item">조회 조건에 맞는 거래 내역이 없습니다.</div>';
+                return;
+            }
+
+            transactions.forEach(item => {
+                const itemDiv = document.createElement('div');
+                itemDiv.className = 'transaction-item';
+                const sign = item.type === 'income' ? '+' : '-';
+                const amountClass = item.type; 
+
+                itemDiv.innerHTML = `
+                    <div class="item-details">
+                        <span class="tx-date">${item.date}</span>
+                        <span class="tx-description">${item.description}</span>
+                        <span class="tx-category">${item.category}</span>
+                        <span class="tx-amount ${amountClass}">
+                            ${sign} ${formatCurrency(item.amount)}
+                        </span>
+                    </div>
+                    <!-- DELETE API가 구현되면 handleDeleteTransaction(item.id) 호출 -->
+                    <button class="delete-btn" data-id="${item.id}" onclick="handleDeleteTransaction(${item.id})">삭제</button>
+                `;
+                listBody.appendChild(itemDiv);
+            });
+        }
+        
+        // --- 페이지네이션 렌더링 ---
+        function renderPagination(current, total) {
+            const pagingControls = document.getElementById('paging-controls');
+            pagingControls.innerHTML = '';
+            
+            if (total <= 1) return;
+
+            pagingControls.innerHTML = `<span class="page-info">총 ${total} 페이지</span>`;
+
+            // 이전 버튼
+            if (current > 1) {
+                const prevBtn = document.createElement('button');
+                prevBtn.className = 'page-number';
+                prevBtn.textContent = '◀';
+                prevBtn.onclick = () => fetchHistory(current - 1);
+                pagingControls.appendChild(prevBtn);
+            }
+
+            // 페이지 번호 버튼 (최대 5개 표시)
+            const startPage = Math.max(1, current - 2);
+            const endPage = Math.min(total, startPage + 4);
+
+            for (let i = startPage; i <= endPage; i++) {
+                const btn = document.createElement('button');
+                btn.className = `page-number ${i === current ? 'current' : ''}`;
+                btn.textContent = i;
+                btn.onclick = () => fetchHistory(i);
+                pagingControls.appendChild(btn);
+            }
+
+            // 다음 버튼
+            if (current < total) {
+                const nextBtn = document.createElement('button');
+                nextBtn.className = 'page-number';
+                nextBtn.textContent = '▶';
+                nextBtn.onclick = () => fetchHistory(current + 1);
+                pagingControls.appendChild(nextBtn);
+            }
+        }
+
+        // --- 거래 삭제 처리 (PLACEHOLDER) ---
+        async function handleDeleteTransaction(transactionId) {
+            // **[필요한 API 엔드포인트]** /api/transactions/delete/{transactionId}
+            try {
+                // 이 코드는 현재 server.js에 구현되지 않았습니다. 구현 후 주석을 해제하세요.
+                /*
+                const response = await fetch(`${BASE_API_URL}/delete/${transactionId}`, {
+                    method: 'DELETE',
+                });
+                
+                if (!response.ok) throw new Error(`HTTP Error: ${response.status}`);
+                const result = await response.json();
+                */
+                
+                // 임시 메시지: API가 없으므로 성공 처리 가정
+                alert(`거래 ID ${transactionId} 삭제 요청 완료. (서버 API 구현 필요: ${BASE_API_URL}/delete)`);
+                // 삭제 후 현재 페이지를 다시 로드
+                fetchHistory(currentPage);
+
+            } catch (error) {
+                console.error("거래 삭제 실패:", error);
+                alert("거래 삭제 중 오류가 발생했습니다. 콘솔을 확인해 주세요.");
+            }
+        }
+
+        // --- 초기화 및 이벤트 리스너 등록 ---
+        window.onload = function () {
+            // 기본 날짜 설정 (최근 30일 조회)
+            const today = new Date();
+            const oneMonthAgo = new Date();
+            oneMonthAgo.setDate(today.getDate() - 30);
+
+            const todayStr = today.toISOString().substring(0, 10);
+            const oneMonthAgoStr = oneMonthAgo.toISOString().substring(0, 10);
+            
+            document.getElementById('filter-from-date').value = oneMonthAgoStr;
+            document.getElementById('filter-to-date').value = todayStr;
+
+            // 폼 제출 시 조회 함수 호출
+            document.getElementById('search-form').addEventListener('submit', (e) => {
+                e.preventDefault();
+                fetchHistory(1); // 새로운 검색은 1페이지부터 시작
+            });
+            
+            // 초기 데이터 로드
+            fetchHistory(1); 
+        };
+    </script>
 </body>
 </html>

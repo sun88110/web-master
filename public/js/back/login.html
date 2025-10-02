@@ -17,65 +17,14 @@
     <form id="login-form">
       <input type="text" id="username" placeholder="아이디" required />
       <input type="password" id="password" placeholder="비밀번호" required />
-      <button type="submit"><a href="main.html">로그인</a></button>
+      <button type="submit">로그인</button>
     </form>
     <p>계정이 없으신가요? <a href="sign.html">회원가입</a></p>
   </div>
 
   <!-- 🔢 계산기 영역 -->
-  <section class="calculator">
-    <h2>🧮 계산기</h2>
-    <input type="text" id="calc-display" disabled />
-    <div class="calc-buttons">
-      <!-- 1행 -->
-      <button onclick="appendValue('7')">7</button>
-      <button onclick="appendValue('8')">8</button>
-      <button onclick="appendValue('9')">9</button>
-      <button onclick="appendValue('/')">÷</button>
 
-      <!-- 2행 -->
-      <button onclick="appendValue('4')">4</button>
-      <button onclick="appendValue('5')">5</button>
-      <button onclick="appendValue('6')">6</button>
-      <button onclick="appendValue('*')">×</button>
-
-      <!-- 3행 -->
-      <button onclick="appendValue('1')">1</button>
-      <button onclick="appendValue('2')">2</button>
-      <button onclick="appendValue('3')">3</button>
-      <button class="plus" onclick="appendValue('+')">+</button>
-
-      <!-- 4행 -->
-      <button onclick="appendValue('0')">0</button>
-      <button onclick="appendValue('.')">.</button>
-      <button onclick="appendValue('-')">−</button>
-      <button class="equals" onclick="calculate()">=</button>
-
-      <!-- 5행 (마지막줄 = 버튼 크게) -->
-      <button class="clear" onclick="clearDisplay()">C</button>
-
-    </div>
-  </section>
-
-  <script>
-    const display = document.getElementById("calc-display");
-
-    function appendValue(val) {
-      display.value += val;
-    }
-
-    function calculate() {
-      try {
-        display.value = eval(display.value);
-      } catch {
-        display.value = "Error";
-      }
-    }
-
-    function clearDisplay() {
-      display.value = "";
-    }
-  </script>
+<script src="login.js"></script>
 </body>
 
 </html>

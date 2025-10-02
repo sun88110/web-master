@@ -2,47 +2,134 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>마이페이지</title>
-    <link rel="stylesheet" href="main.css" />
-    <link rel="stylesheet" href="mypage.css" />
+    <!-- Tailwind CSS CDN 로드 -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        // Tailwind configuration for custom styles and font
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'primary-500': '#3b82f6', // blue-500
+                        'danger-500': '#ef4444', // red-500
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                }
+            }
+        }
+    </script>
+    <link rel="stylesheet" href="mypage.css">
 </head>
 <body>
     <div class="mypage-container">
-        <h2>마이페이지</h2>
+        <h2 class="text-3xl font-bold mb-6 text-gray-800">마이페이지</h2>
 
+        <!-- 목표 예산 섹션 -->
         <section class="budget-goal-section card-style">
-            <h3>목표 예산</h3>
-            <div id="goal-display">
-                <p>현재 목표: <strong>500,000원</strong></p>
-                <button class="small-btn">수정</button>
+            <h3 class="text-xl font-semibold mb-3 text-gray-700">목표 예산</h3>
+            <div id="goal-display" class="flex justify-between items-center">
+                <p class="text-lg">현재 목표: <strong class="text-primary-500">500,000원</strong></p>
+                <button class="small-btn" onclick="handleGoalEdit()">수정</button>
             </div>
         </section>
 
+        <!-- 월간 지출 내역 표시 (그래프) 섹션 -->
         <section class="monthly-spending-section card-style">
-            <h3>월간 지출 내역 표시 (그래프)</h3>
-            <div class="chart-area">
-                <p>이번 달 지출 현황 그래프 (JS 구현 예정)</p>
+            <h3 class="text-xl font-semibold mb-3 text-gray-700">월간 지출 현황 (그래프)</h3>
+            <div class="chart-area h-48 bg-white flex items-center justify-center border border-gray-200 rounded-md">
+                <p class="text-gray-500">이번 달 지출 현황 그래프 (JS 라이브러리 구현 예정)</p>
             </div>
         </section>
 
-        <section class="action-section">
-            <button class="action-btn primary-action" onclick="alert('비밀번호 변경 모달/페이지 이동 기능 구현 예정')">
+        <!-- 테이블 데이터를 활용한 새로운 섹션: 최근 거래 내역 -->
+        <section class="transaction-history-section card-style">
+            <h3 class="text-xl font-semibold mb-3 text-gray-700">최근 거래 내역</h3>
+            <div class="overflow-x-auto rounded-lg border border-gray-200 shadow-sm">
+                <!-- 테이블 데이터는 <table> 태그를 사용하여 구조화합니다. -->
+                <table class="min-w-full text-sm text-left text-gray-700 divide-y divide-gray-200">
+                    <thead class="text-xs text-gray-700 uppercase bg-gray-100">
+                        <tr>
+                            <th scope="col" class="px-4 sm:px-6 py-3 font-medium">날짜</th>
+                            <th scope="col" class="px-4 sm:px-6 py-3 font-medium">분류</th>
+                            <th scope="col" class="px-4 sm:px-6 py-3 font-medium">내용</th>
+                            <th scope="col" class="px-4 sm:px-6 py-3 font-medium text-right">금액</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-gray-200 bg-white">
+                        <tr class="hover:bg-gray-50">
+                            <td class="px-4 sm:px-6 py-4 whitespace-nowrap">2025-10-01</td>
+                            <td class="px-4 sm:px-6 py-4 whitespace-nowrap text-green-600 font-medium">수입</td>
+                            <td class="px-4 sm:px-6 py-4">월급 입금</td>
+                            <td class="px-4 sm:px-6 py-4 whitespace-nowrap font-bold text-right text-green-700">+ 3,000,000원</td>
+                        </tr>
+                        <tr class="hover:bg-gray-50">
+                            <td class="px-4 sm:px-6 py-4 whitespace-nowrap">2025-09-30</td>
+                            <td class="px-4 sm:px-6 py-4 whitespace-nowrap text-red-600 font-medium">지출</td>
+                            <td class="px-4 sm:px-6 py-4">식료품 (마트)</td>
+                            <td class="px-4 sm:px-6 py-4 whitespace-nowrap font-bold text-right text-red-700">- 45,800원</td>
+                        </tr>
+                        <tr class="hover:bg-gray-50">
+                            <td class="px-4 sm:px-6 py-4 whitespace-nowrap">2025-09-29</td>
+                            <td class="px-4 sm:px-6 py-4 whitespace-nowrap text-red-600 font-medium">지출</td>
+                            <td class="px-4 sm:px-6 py-4">점심 식사</td>
+                            <td class="px-4 sm:px-6 py-4 whitespace-nowrap font-bold text-right text-red-700">- 12,000원</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="mt-4 text-center">
+                <button class="small-btn bg-gray-200 hover:bg-gray-300 text-gray-800 font-medium py-2 px-4 transition duration-150" onclick="handleViewAllTransactions()">
+                    전체 내역 보기
+                </button>
+            </div>
+        </section>
+
+        <!-- 액션 버튼 섹션: 비밀번호 변경 -->
+        <section class="action-section mb-4">
+            <button class="action-btn primary-action" onclick="handlePasswordChange()">
                 비밀번호 변경
             </button>
         </section>
 
-        <section class="action-section">
-            <button class="action-btn danger-action" onclick="alert('경고: 모든 거래 내역 삭제/초기화 기능 구현 예정')">
+        <!-- 액션 버튼 섹션: 거래 내역 삭제/초기화 -->
+        <section class="action-section mb-6">
+            <button class="action-btn danger-action" onclick="handleDeleteHistory()">
                 거래 내역 삭제 / 초기화
             </button>
         </section>
         
+        <!-- 메인으로 돌아가기 버튼 -->
         <section class="action-section">
-            <button class="back-to-main-btn" onclick="location.href='main.html'">
+            <button class="action-btn back-to-main-btn" onclick="location.href='main.html'">
                 메인으로 돌아가기
             </button>
         </section>
     </div>
-    <script src="mypage.js"></script>
+
+    <script>
+        // JS 함수들 (alert() 대신 콘솔 로그 및 사용자 정의 메시지 사용)
+        function handleGoalEdit() {
+            console.log('목표 예산 수정 모달/폼 표시 기능 구현 예정');
+            // 실제 앱에서는 여기에 모달을 띄우는 코드를 작성합니다.
+        }
+
+        function handlePasswordChange() {
+            console.log('비밀번호 변경 페이지 이동 기능 구현 예정');
+            // 실제 앱에서는 페이지 이동 또는 모달을 띄웁니다.
+        }
+
+        function handleDeleteHistory() {
+            console.log('경고: 모든 거래 내역 삭제/초기화 기능 구현 예정 (사용자 확인 필요)');
+            // 실제 앱에서는 사용자 확인을 위한 커스텀 모달을 띄웁니다.
+        }
+
+        function handleViewAllTransactions() {
+            console.log('전체 거래 내역 페이지로 이동 기능 구현 예정');
+        }
+    </script>
 </body>
 </html>

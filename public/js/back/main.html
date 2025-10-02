@@ -2,23 +2,46 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>가계부 - 메인</title>
-    <link rel="stylesheet" href="main.css" />
+    <link rel="stylesheet" href="main.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
     <div class="layout-container">
 
         <aside class="sidebar left">
-            <h3>📌 나의 예산</h3>
+            <h3>📌 예산 설정</h3>
             <form id="budget-form">
-                <input type="number" id="budget-input" placeholder="예산 입력 (예: 500000)" required />
+                <input type="month" id="budget-month" value="2025-10" required />
+                
+                <div class="select-wrapper">
+                    <select id="budget-category">
+                        <option value="" selected>전체 예산 (선택 사항)</option>
+                        <option value="1">식비</option>
+                        <option value="2">교통</option>
+                        <option value="3">생활</option>
+                        <option value="4">주거</option>
+                        <option value="5">통신</option>
+                        <option value="6">의료</option>
+                        <option value="7">교육</option>
+                        <option value="8">저축</option>
+                        <option value="9">쇼핑</option>
+                        <option value="10">기타</option>
+                    </select>
+                </div>
+                
+                <input type="number" id="budget-amount-input" placeholder="금액 입력 (예: 500000)" required />
                 <button type="submit">등록</button>
             </form>
-            <div id="budget-display">등록된 예산: <strong>0원</strong></div>
+            
+            <div id="budget-display">
+                <h4>나의 월 예산 현황</h4>
+                <p>전체 예산: <strong id="total-budget">0원</strong></p>
+                </div>
             
             <button class="mypage-btn" onclick="location.href='mypage.html'">마이페이지</button>
-            
-            <button class="logout-btn" onclick="location.href='login.html'">로그아웃</button> 
+            <button class="logout-btn" onclick="location.href='login.html'">로그아웃</button>
         </aside>
 
         <main class="main-content">
@@ -27,51 +50,65 @@
             <section class="add-transaction">
                 <h3>📥 거래 추가</h3>
                 <form id="transaction-form">
-                    <div class="select-wrapper">
-                        <select id="category" required>
-                            <option value="" disabled selected>카테고리 선택</option>
-                            <option value="식비">식비</option>
-                            <option value="교통">교통</option>
-                            <option value="생활">생활</option>
-                            <option value="주거">주거</option>
-                            <option value="통신">통신</option>
-                            <option value="의료">의료</option>
-                            <option value="교육">교육</option>
-                            <option value="저축">저축</option>
-                            <option value="쇼핑">쇼핑</option>
-                            <option value="기타">기타</option>
-                        </select>
+                    <div class="transaction-type-radio">
+                        <input type="radio" id="type-expense" name="transaction-type" value="지출" checked>
+                        <label for="type-expense">지출</label>
+                        <input type="radio" id="type-income" name="transaction-type" value="수입">
+                        <label for="type-income">수입</label>
                     </div>
-                    <input type="text" id="description" placeholder="항목 (예: 커피)" required />
-                    <input type="number" id="amount" placeholder="금액 (예: -4000, +5000)" required />
-                    <input type="date" id="date" required />
-                    <button type="submit">등록</button>
-                </form>
+
+                    <div class="select-wrapper"> 
+                        <select id="category-select" required> 
+                            <option value="" disabled selected>카테고리 선택</option> 
+                            <option value="1">식비</option>
+                            <option value="2">교통</option>
+                            <option value="3">생활</option>
+                            <option value="4">주거</option>
+                            <option value="5">통신</option>
+                            <option value="6">의료</option>
+                            <option value="7">교육</option>
+                            <option value="8">저축</option>
+                            <option value="9">쇼핑</option>
+                            <option value="10">기타</option>
+                        </select> 
+                    </div> 
+
+                    <input type="text" id="description" placeholder="항목 (예: 커피, 월급)" required /> 
+                    <input type="number" id="amount-input" placeholder="금액 (예: 4000, 5000)" min="1" required /> 
+                    <input type="date" id="date" required /> 
+                    <button type="submit">등록</button> 
+                </form> 
             </section>
 
             <section class="transaction-list">
                 <div class="list-header">
-                    <h3>📃 거래 내역</h3>
+                    <h3>📃 최근 거래 내역</h3>
                     <button class="view-all-btn" onclick="location.href='full_history.html'">전체 내역 조회</button>
                 </div>
                 <ul id="transactions">
-                    </ul>
+                </ul>
             </section>
         </main>
 
-        <aside class="sidebar right">
-            <h3>📊 연령대 평균 지출</h3>
-            <p><strong>20대 평균 지출:</strong> 1,200,000원</p>
-            <p><strong>주 사용처:</strong></p>
-            <ul>
-                <li>식비 - 450,000원</li>
-                <li>교통비 - 120,000원</li>
-                <li>문화생활 - 100,000원</li>
+        <aside class="sidebar right analysis-area"> 
+            <h3>📊 내 연령대 지출 분석</h3> 
+            <div id="user-age-group-info">
+                <p><strong>내 연령대 (30대)</strong> 평균 대비 지출:</p>
+                <canvas id="age-analysis-chart"></canvas>
+            </div>
+
+            <h4>🏆 지출이 가장 큰 카테고리 (TOP 5)</h4>
+            <ul id="top-category-list">
+                <li>1. 식비 - 25%</li>
+                <li>2. 교통/차량 - 20%</li>
+                <li>3. 문화생활 - 15%</li>
             </ul>
-        </aside>
+        </aside> 
 
     </div>
 
-    <script src="main.js"></script>
+        <script src="main.js"></script>
+
+    
 </body>
 </html>
