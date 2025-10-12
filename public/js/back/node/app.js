@@ -135,6 +135,54 @@ try {
     }
 });
 
+// 1.3. 회원 정보 조회 (GET /users/:id) - 마이페이지 데이터 로딩용
+app.get('/users/:id', async (req, res) => {
+    const userId = parseInt(req.params.id);
+    let connection;
+
+    if (isNaN(userId)) {
+        // 클라이언트에서 404 오류가 아닌 400 오류를 받게 하여 문제 파악을 돕습니다.
+        return res.status(400).json({ message: "유효한 사용자 ID가 필요합니다." });
+    }
+
+    try {
+        connection = await oracledb.getConnection(dbConfig.poolAlias);
+
+        // USER_ID를 기준으로 사용자의 정보를 조회 (PASSWORD_HASH는 제외)
+        const sql = `
+            SELECT USER_ID, USERNAME, EMAIL, BIRTH_YEAR 
+            FROM USERS 
+            WHERE USER_ID = :userId
+        `;
+        const result = await connection.execute(sql, { userId: userId });
+        const user = result.rows[0];
+
+        if (!user) {
+            // 해당 ID의 사용자가 없을 경우 404를 반환합니다.
+            return res.status(404).json({ message: "해당 사용자 정보를 찾을 수 없습니다." });
+        }
+        
+        // Oracle DB 결과 객체의 키를 소문자로 변환하여 클라이언트와 일관성을 맞춥니다.
+        const userInfo = {
+            user_id: user.USER_ID,
+            username: user.USERNAME,
+            email: user.EMAIL,
+            birth_year: user.BIRTH_YEAR
+        };
+
+        res.status(200).json({ 
+            success: true, 
+            user: userInfo 
+        });
+
+    } catch (err) {
+        console.error("※Error loading user data for mypage:", err);
+        res.status(500).json({ error: "사용자 정보 로딩 중 서버 오류가 발생했습니다.", detail: err.message });
+    } finally {
+        if (connection) { try { await connection.close(); } catch (err) { console.error("※Error closing connection:", err); } }
+    }
+});
+
 
 // =======================================================
 // 📌 2. 가계부 API 라우트 (/api)
