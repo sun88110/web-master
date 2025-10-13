@@ -174,6 +174,60 @@ app.get('/users/:id', async (req, res) => {
     }
 });
 
+// 1.4. 비밀번호 변경 라우트 (PUT /users/password/:id)
+app.put('/users/password/:id', async (req, res) => {
+    const userId = parseInt(req.params.id);
+    const { current_password, new_password } = req.body;
+    let connection;
+
+    // 1. 필수 입력값 및 사용자 ID 유효성 검사
+    if (isNaN(userId)) {
+        return res.status(400).json({ message: "유효한 사용자 ID가 필요합니다." });
+    }
+    if (!current_password || !new_password) {
+        return res.status(400).json({ message: "현재 비밀번호와 새 비밀번호를 모두 입력해야 합니다." });
+    }
+    if (current_password === new_password) {
+        return res.status(400).json({ message: "새 비밀번호는 현재 비밀번호와 달라야 합니다." });
+    }
+    // 💡 참고: 실제 운영 환경에서는 비밀번호 복잡성(길이, 문자 종류) 검사를 추가해야 합니다.
+
+    try {
+        connection = await oracledb.getConnection(dbConfig.poolAlias);
+
+        // 2. 현재 비밀번호 검증
+        const checkSql = `SELECT PASSWORD_HASH FROM USERS WHERE USER_ID = :userId`;
+        const checkResult = await connection.execute(checkSql, { userId: userId });
+        const user = checkResult.rows[0];
+
+        if (!user) {
+            return res.status(404).json({ message: "사용자 정보를 찾을 수 없습니다." });
+        }
+
+        // 비밀번호 일치 여부 확인 (현재 코드에서는 평문 비교)
+        if (current_password !== user.PASSWORD_HASH) {
+            return res.status(401).json({ message: "현재 비밀번호가 일치하지 않습니다." });
+        }
+        
+        // 3. 새 비밀번호로 업데이트
+        // 참고: 현재는 비밀번호를 Hash하지 않고 저장하므로, 평문으로 업데이트합니다.
+        const updateSql = `UPDATE USERS SET PASSWORD_HASH = :newPassword WHERE USER_ID = :userId`;
+        const updateResult = await connection.execute(updateSql, { newPassword: new_password, userId: userId }, { autoCommit: true });
+
+        if (updateResult.rowsAffected === 1) {
+            res.status(200).json({ success: true, message: "비밀번호가 성공적으로 변경되었습니다." });
+        } else {
+            res.status(500).json({ message: "비밀번호 변경 중 데이터베이스 오류가 발생했습니다." });
+        }
+
+    } catch (err) {
+        console.error("※Error during password change:", err);
+        res.status(500).json({ error: "비밀번호 변경 처리 중 서버 오류가 발생했습니다.", detail: err.message });
+    } finally {
+        await closeConnection(connection);
+    }
+});
+
 
 // =======================================================
 // 📌 2. 가계부 API 라우트 (/api)

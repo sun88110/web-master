@@ -1,4 +1,4 @@
-// mypage.js (잔액 로딩 안정화를 위한 최종 수정)
+// mypage.js (비밀번호 변경 기능 및 세션 유지 로직 최종 완성)
 
 // =======================================================
 // 전역 설정 및 유틸리티 함수
@@ -24,6 +24,37 @@ function handleFetchError(error, defaultMsg) {
     console.error('API 처리 중 오류 발생:', error);
     alert(`${defaultMsg} 잠시 후 다시 시도해 주세요. 상세: ${error.message || '알 수 없는 오류'}`);
 }
+
+// =======================================================
+// UI 토글 함수 (HTML에서 호출됨)
+// =======================================================
+
+/**
+ * 비밀번호 변경 섹션을 보이거나 숨깁니다.
+ */
+function togglePasswordSection() {
+    const passwordSection = document.getElementById('password-change-section');
+    const toggleButtonSection = document.getElementById('toggle-button-section');
+    const mainBackBtn = document.getElementById('main-back-btn');
+
+    if (passwordSection && toggleButtonSection && mainBackBtn) {
+        // 'hidden' 클래스를 토글하여 보이기/숨기기 전환
+        passwordSection.classList.toggle('hidden');
+        toggleButtonSection.classList.toggle('hidden');
+        
+        // 메인으로 돌아가기 버튼도 숨깁니다 (비밀번호 변경 중에는 메인으로 돌아가는 것을 막기 위해)
+        mainBackBtn.classList.toggle('hidden');
+        
+        // 폼이 보일 때 입력 필드를 초기화합니다.
+        if (!passwordSection.classList.contains('hidden')) {
+             const passwordForm = document.getElementById('password-change-form');
+             if(passwordForm) passwordForm.reset();
+        }
+    } else {
+        console.error("비밀번호 변경 섹션 관련 요소를 찾을 수 없습니다.");
+    }
+}
+
 
 // =======================================================
 // 인증 및 데이터 로딩
@@ -59,11 +90,9 @@ async function loadMyPageData() {
         
         if (userResponse.ok) {
             const userData = await userResponse.json();
-            // userData.user가 있다면 user 정보 업데이트
             if (userData.user) {
                 updateUserInfoDisplay(userData.user);
             } else {
-                // json-server의 경우, /users/:id 는 바로 객체를 반환할 수 있으므로
                 updateUserInfoDisplay(userData);
             }
         } else {
@@ -71,42 +100,33 @@ async function loadMyPageData() {
         }
         
         // 2. 예산 잔액 및 최근 거래 내역 로딩
-        // 🟢 수정된 부분: cache: 'no-cache' 옵션을 추가하여 304 상태 코드를 방지하고 
-        // 잔액 로딩(dataResponse.ok)이 확실히 성공하도록 합니다.
         const dataResponse = await fetch(`${API_BASE}/api/data?user_id=${CURRENT_USER_ID}`, {
             cache: 'no-cache' 
         });
         
         if (dataResponse.ok) {
             const data = await dataResponse.json();
-            
-            // 잔액 필드 유연성 확보: totalBudget, balance, remaining 중 존재하는 값을 사용
             const totalBalance = data.totalBudget || data.balance || data.remaining || 0; 
-            
             updateGoalDisplay(totalBalance); 
-            
             renderTransactionTable(data.recentTransactions || []);
 
         } else {
-            // 304 상태 코드는 이 블록을 실행시키므로, 캐시 문제 해결 후에는 이 코드가 실행되지 않아야 합니다.
             updateGoalDisplay('API 연결 실패 (잔액 로드 불가)'); 
             console.error("예산 및 거래 내역 로딩 실패:", dataResponse.status);
         }
     } catch (error) {
-        updateGoalDisplay('네트워크 오류'); // 네트워크 오류 시 오류 메시지 표시
+        updateGoalDisplay('네트워크 오류'); 
         handleFetchError(error, "마이페이지 데이터 로딩 중 치명적인 오류가 발생했습니다.");
     }
 }
 
 /**
  * 예산/잔액 UI 업데이트
- * @param {number|string} balanceAmount - 잔액 금액 또는 오류 메시지
  */
 function updateGoalDisplay(balanceAmount) {
     const goalTextEl = document.getElementById('goal-text'); 
     
     if (goalTextEl) {
-        // 숫자가 아닌 경우 (오류 메시지)는 그대로 표시
         if (typeof balanceAmount === 'string' || balanceAmount instanceof String) {
             goalTextEl.innerHTML = `<span style="color: #ef4444;">${balanceAmount}</span>`;
             return;
@@ -115,7 +135,6 @@ function updateGoalDisplay(balanceAmount) {
         const currencyText = formatCurrency(balanceAmount);
         const color = balanceAmount < 0 ? '#ef4444' : '#3b82f6'; 
         
-        // 🟢 '로딩 중...' 텍스트를 정확한 잔액으로 대체
         goalTextEl.innerHTML = `현재 예산: <strong style="color: ${color};">${currencyText}</strong>`;
     } else {
         console.error("HTML 요소 ID 'goal-text'를 찾을 수 없습니다. HTML을 확인하세요.");
@@ -125,7 +144,6 @@ function updateGoalDisplay(balanceAmount) {
 
 function updateUserInfoDisplay(user) {
     const usernameEl = document.getElementById('profile-username');
-    // username이 루트 객체에 있을 경우와 user 객체 내부에 있을 경우 모두 대응
     const userDisplay = user.username || user.name || '';
     if (usernameEl) usernameEl.value = userDisplay;
     
@@ -173,7 +191,76 @@ function renderTransactionTable(transactions) {
 }
 
 // =======================================================
-// 초기화 로직
+// 비밀번호 변경 기능 구현
+// =======================================================
+
+/**
+ * 비밀번호 변경 폼 제출을 처리합니다.
+ */
+async function handlePasswordChange(e) {
+    e.preventDefault(); 
+
+    if (!CURRENT_USER_ID) {
+        alert("사용자 정보를 찾을 수 없습니다. 다시 로그인해 주세요.");
+        return;
+    }
+
+    const currentPasswordEl = document.getElementById('current-password');
+    const newPasswordEl = document.getElementById('new-password');
+    
+    const currentPassword = currentPasswordEl ? currentPasswordEl.value.trim() : '';
+    const newPassword = newPasswordEl ? newPasswordEl.value.trim() : '';
+
+    if (!currentPassword || !newPassword) {
+        alert("현재 비밀번호와 새 비밀번호를 모두 입력해야 합니다.");
+        return;
+    }
+
+    if (currentPassword === newPassword) {
+        alert("새 비밀번호는 현재 비밀번호와 달라야 합니다.");
+        return;
+    }
+
+    try {
+        const response = await fetch(`${API_BASE}/users/password/${CURRENT_USER_ID}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                current_password: currentPassword,
+                new_password: newPassword
+            }),
+        });
+
+        const result = await response.json();
+
+        if (response.ok) {
+            alert("✅ 비밀번호가 성공적으로 변경되었습니다. 보안을 위해 다시 로그인해 주세요.");
+            // 비밀번호 변경 후 로그아웃 처리
+            window.location.href = 'login.html'; 
+        } else {
+            alert(`⚠️ 비밀번호 변경 실패: ${result.message || '알 수 없는 오류'}`);
+        }
+    } catch (error) {
+        handleFetchError(error, "비밀번호 변경 중 네트워크 오류가 발생했습니다.");
+    }
+}
+
+
+// =======================================================
+// 거래 내역 삭제 (초기화) 로직
+// =======================================================
+
+function handleDeleteHistory() { 
+    if(confirm('경고: 정말로 모든 거래 내역을 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다.')) {
+        // 이 기능은 추후 메인 페이지로 이동하여 구현될 예정입니다.
+        console.log('거래 내역 삭제 요청 기능 구현 예정'); 
+    }
+}
+
+// =======================================================
+// 초기화 및 이벤트 리스너 등록
 // =======================================================
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -183,22 +270,27 @@ document.addEventListener('DOMContentLoaded', () => {
     
     loadMyPageData();
     
-    const backBtn = document.querySelector('.back-to-main-btn');
-    if (backBtn && CURRENT_USER_ID && CURRENT_USERNAME) {
-        backBtn.onclick = () => { 
+    // 1. 메인으로 돌아가기 버튼 연결 (세션 유지)
+    const mainBackBtn = document.getElementById('main-back-btn');
+    
+    if (mainBackBtn && CURRENT_USER_ID && CURRENT_USERNAME) {
+        mainBackBtn.onclick = () => { 
              const encodedUsername = encodeURIComponent(CURRENT_USERNAME);
+             // 쿼리 파라미터를 사용하여 main.html로 이동 -> 세션 유지
              window.location.href = `main.html?user_id=${CURRENT_USER_ID}&username=${encodedUsername}`;
         };
+    }
+    
+    // 2. 비밀번호 변경 폼 이벤트 연결
+    const passwordForm = document.getElementById('password-change-form');
+    if (passwordForm) {
+        passwordForm.addEventListener('submit', handlePasswordChange);
+    } else {
+        console.warn("비밀번호 변경 폼 (ID: password-change-form)을 찾을 수 없습니다. HTML을 확인하세요.");
     }
 });
 
 
 // HTML에 정의된 더미 함수들
 function handleGoalEdit() { alert('목표/예산 수정 기능은 서버와 연동 후 구현됩니다.'); }
-function handlePasswordChange() { alert('비밀번호 변경 기능은 서버와 연동 후 구현됩니다.'); }
-function handleDeleteHistory() { 
-    if(confirm('경고: 정말로 모든 거래 내역을 삭제하시겠습니까?')) {
-        console.log('거래 내역 삭제 요청 기능 구현 예정'); 
-    }
-}
 function handleViewAllTransactions() { console.log('전체 거래 내역 페이지로 이동 기능 구현 예정'); }

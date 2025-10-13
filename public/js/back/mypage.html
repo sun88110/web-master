@@ -116,12 +116,12 @@
             </div>
         </section>
         
-<section class="budget-goal-section card-style">
-    <h3 class="text-xl font-semibold mb-3 text-gray-700">나의 예산</h3>
-    <div id="goal-display" class="flex justify-between items-center">
-        <p id="goal-text" class="text-lg">현재 예산: <strong class="text-primary-500">...</strong></p> 
-    </div>
-</section>
+        <section class="budget-goal-section card-style">
+            <h3 class="text-xl font-semibold mb-3 text-gray-700">나의 예산</h3>
+            <div id="goal-display" class="flex justify-between items-center">
+                <p id="goal-text" class="text-lg">현재 예산: <strong class="text-primary-500">...</strong></p> 
+            </div>
+        </section>
 
         <section class="monthly-spending-section card-style">
             <h3 class="text-xl font-semibold mb-3 text-gray-700">월간 지출 현황 (그래프)</h3>
@@ -156,20 +156,36 @@
             </div>
         </section>
 
-        <section class="action-section">
-            <button class="action-btn primary-action" onclick="handlePasswordChange()">
-                비밀번호 변경
-            </button>
+        <section id="password-change-section" class="card-style hidden">
+            <h3 class="text-xl font-semibold mb-4 text-gray-700">비밀번호 변경</h3>
+            <form id="password-change-form" class="space-y-4">
+                <div>
+                    <label for="current-password" class="block text-sm font-medium text-gray-700">현재 비밀번호</label>
+                    <input type="password" id="current-password" required
+                           class="mt-1 block w-full rounded-md border border-gray-300 shadow-sm p-3 focus:ring-primary-500 focus:border-primary-500">
+                </div>
+                <div>
+                    <label for="new-password" class="block text-sm font-medium text-gray-700">새 비밀번호</label>
+                    <input type="password" id="new-password" required
+                           class="mt-1 block w-full rounded-md border border-gray-300 shadow-sm p-3 focus:ring-primary-500 focus:border-primary-500">
+                </div>
+                <button type="submit" class="action-btn primary-action">
+                    비밀번호 변경 완료
+                </button>
+                <button type="button" class="action-btn back-to-main-btn" onclick="togglePasswordSection()">
+                    취소
+                </button>
+            </form>
         </section>
-
-        <section class="action-section mb-6">
-            <button class="action-btn danger-action" onclick="handleDeleteHistory()">
-                거래 내역 삭제 / 초기화
+        
+        <section id="toggle-button-section" class="action-section">
+            <button id="password-toggle-btn" class="action-btn primary-action" onclick="togglePasswordSection()">
+                비밀번호 변경
             </button>
         </section>
         
         <section class="action-section">
-            <button class="action-btn back-to-main-btn" onclick="location.href='main.html'"> 
+            <button id="main-back-btn" class="action-btn back-to-main-btn"> 
                 메인으로 돌아가기
             </button>
         </section>
