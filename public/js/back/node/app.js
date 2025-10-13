@@ -639,7 +639,7 @@ app.post('/api/transactions/history', async (req, res) => {
         }
 
         const whereCondition = whereClauses.join(' AND ');
-        
+
         // 💡 ORA-00923 최종 해결 로직
         const whereClause = whereCondition.length > 0 ? whereCondition : '';
         const whereKeyword = whereClause ? ' WHERE ' : ''; // 양쪽 공백 포함
@@ -647,7 +647,7 @@ app.post('/api/transactions/history', async (req, res) => {
         // 3. 총 항목 수 조회 쿼리 (totalCount)
         // 🚨 ORA-00923 방지를 위해 문자열 연결(+) 사용
         const countSql = "SELECT COUNT(*) AS TOTAL_COUNT FROM TRANSACTIONS T" + whereKeyword + whereClause;
-        
+
         console.log("DEBUG SQL (Count):", countSql);
         console.log("DEBUG BINDS:", baseBinds);
 
@@ -667,11 +667,11 @@ app.post('/api/transactions/history', async (req, res) => {
         // 🚨 historySql도 일반 문자열 연결로 변경하여 공백 문제 완벽 제거
         console.log('whereKeyword: ', whereKeyword);
         console.log('whereClause: ', whereClause);
-const historySql = `
+        const historySql = `
 SELECT T.TRANSACTION_ID AS ID, T.AMOUNT, T.DESCRIPTION, T.CATEGORY_ID, TO_CHAR(T.TRANSACTION_DATE, 'YYYY-MM-DD') AS "DATE"
 FROM TRANSACTIONS T${whereKeyword}${whereClause} 
 ORDER BY T.TRANSACTION_DATE DESC, T.TRANSACTION_ID DESC
-                `; 
+                `;
 
         // 🚨 historySql 실행
         const historyResult = await connection.execute(historySql, baseBinds);
