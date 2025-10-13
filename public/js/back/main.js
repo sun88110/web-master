@@ -1,4 +1,4 @@
-// main.js
+// main.js (가계부 메인 페이지 최종 완성본)
 
 // =======================================================
 // 전역 설정: 카테고리 데이터 및 서버 엔드포인트
@@ -63,6 +63,9 @@ function renderCategoryOptions(selectEl, categories, includeDefault = false) {
     });
 }
 
+/**
+ * 지출/수입 라디오 버튼 변경 시 카테고리 드롭다운을 업데이트합니다.
+ */
 function handleTransactionTypeChange(e) {
     const selectedType = e.currentTarget.value;
     const selectEl = document.getElementById('category-select');
@@ -74,6 +77,9 @@ function handleTransactionTypeChange(e) {
     }
 }
 
+/**
+ * 로그인 상태에 따라 환영 메시지와 기본 UI를 업데이트합니다.
+ */
 function updateLoginUI() {
     if (CURRENT_USER_ID) {
         const welcomeEl = document.getElementById('user-welcome-message'); 
@@ -94,6 +100,9 @@ function updateLoginUI() {
     }
 }
 
+/**
+ * 최근 거래 내역 목록을 화면에 렌더링합니다.
+ */
 function renderTransactions(transactions) {
     const ul = document.getElementById('transactions');
     if (!ul) return; 
@@ -109,6 +118,7 @@ function renderTransactions(transactions) {
 
     sortedTransactions.forEach(tx => {
         const li = document.createElement('li');
+        // tx.category_id가 INCOME_CATEGORIES에 속하는지 확인
         const isIncome = INCOME_CATEGORIES.some(c => c.id === tx.category_id);
         const typeClass = isIncome ? 'income' : 'expense';
         const sign = isIncome ? '+' : '-';
@@ -131,6 +141,9 @@ function renderTransactions(transactions) {
     attachDeleteListeners(); 
 }
 
+/**
+ * 서버에서 잔액, 최근 거래, 분석 데이터를 로드하고 UI를 업데이트합니다.
+ */
 async function loadInitialData() {
     if (!CURRENT_USER_ID) return; 
 
@@ -146,6 +159,7 @@ async function loadInitialData() {
 
         const totalBudgetEl = document.getElementById('total-budget');
         if(totalBudgetEl) {
+            // 잔액 업데이트 및 색상 변경
             totalBudgetEl.textContent = formatCurrency(data.totalBudget || 0);
             totalBudgetEl.style.color = (data.totalBudget < 0) ? '#e74c3c' : '#4CAF50';
         }
@@ -195,6 +209,9 @@ function initChart() {
     });
 }
 
+/**
+ * 서버에서 받은 분석 데이터를 기반으로 차트와 TOP 5 목록을 업데이트합니다.
+ */
 function updateChart(data) {
     const analysisData = data.categoryAnalysis || [];
     const topListEl = document.getElementById('top-category-list');
@@ -203,6 +220,7 @@ function updateChart(data) {
 
     const dataMap = new Map();
     analysisData.forEach(item => {
+        // 지출 카테고리만 포함
         if (EXPENSE_CATEGORIES.some(c => c.name === item.CATEGORY_NAME)) {
              dataMap.set(item.CATEGORY_NAME, item.TOTAL_SPENT || 0);
         }
@@ -213,18 +231,20 @@ function updateChart(data) {
     
     const totalSpent = newData.reduce((sum, current) => sum + current, 0);
 
+    // 차트 업데이트
     myChart.data.labels = expenseCategoryNames;
     myChart.data.datasets[0].data = newData;
     myChart.update();
     
+    // TOP 5 카테고리 목록 업데이트
     topListEl.innerHTML = '';
     const topCategories = analysisData.filter(item => EXPENSE_CATEGORIES.some(c => c.name === item.CATEGORY_NAME))
                                      .sort((a, b) => b.TOTAL_SPENT - a.TOTAL_SPENT)
                                      .slice(0, 5); 
 
     if (topCategories.length === 0) {
-           topListEl.innerHTML = '<li style="color: #999;">집계된 지출 내역이 없습니다.</li>';
-           return;
+            topListEl.innerHTML = '<li style="color: #999;">집계된 지출 내역이 없습니다.</li>';
+            return;
     }
 
     topCategories.forEach((d, index) => {
@@ -245,6 +265,7 @@ async function handleBudgetSubmit(e) {
     
     if (!CURRENT_USER_ID) { alert("로그인이 필요합니다."); return; }
     
+    // ... 예산 등록 로직 (생략: 기존 코드와 동일) ...
     const monthInput = document.getElementById('budget-month').value;
     if (!monthInput) { alert("예산 월을 선택해 주세요."); return; }
     const month = monthInput.replace('-', ''); 
@@ -286,6 +307,7 @@ async function handleTransactionSubmit(e) {
     
     if (!CURRENT_USER_ID) { alert("로그인이 필요합니다."); return; }
 
+    // ... 거래 등록 로직 (생략: 기존 코드와 동일) ...
     const type = document.querySelector('input[name="transaction-type"]:checked')?.value; 
     const categoryId = document.getElementById('category-select').value; 
     const description = document.getElementById('description').value.trim();
@@ -331,7 +353,8 @@ async function handleTransactionSubmit(e) {
 
 function attachDeleteListeners() {
     document.querySelectorAll('.delete-btn').forEach(button => {
-        button.removeEventListener('click', handleDeleteTransaction);
+        // 기존 리스너 제거 후 다시 등록하여 중복 실행 방지
+        button.removeEventListener('click', handleDeleteTransaction); 
         button.addEventListener('click', handleDeleteTransaction);
     });
 }
@@ -346,6 +369,7 @@ async function handleDeleteTransaction(e) {
     
     if (!transactionId) { alert("삭제할 거래 ID를 찾을 수 없습니다."); return; }
     
+    // ... 거래 삭제 로직 (생략: 기존 코드와 동일) ...
     try {
         const response = await fetch(`${API_BASE}/api/transactions/${transactionId}`, {
             method: 'DELETE',
@@ -368,7 +392,7 @@ async function handleDeleteTransaction(e) {
 
 
 // =======================================================
-// 최종 초기화 (⭐마이페이지 이동 로직이 여기에 인라인으로 구현됨)
+// 최종 초기화 및 이벤트 등록
 // =======================================================
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -380,10 +404,11 @@ document.addEventListener('DOMContentLoaded', () => {
     if (userId && username) {
         CURRENT_USER_ID = parseInt(userId);
         CURRENT_USERNAME = decodeURIComponent(username); 
+        // URL에 세션 정보가 노출되는 것을 막기 위해 쿼리 파라미터를 제거 (선택 사항)
         history.replaceState(null, '', window.location.pathname); 
     }
     
-    // 2. 날짜 초기 설정 (현재 날짜/월)
+    // 2. 날짜 초기 설정
     const today = new Date();
     const currentMonth = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}`;
     
@@ -403,8 +428,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // 5. 폼 및 로그아웃 이벤트 리스너 등록
     document.querySelector('.logout-btn')?.addEventListener('click', () => {
-           alert("로그아웃되었습니다.");
-           window.location.href = 'login.html';
+        alert("로그아웃되었습니다.");
+        window.location.href = 'login.html';
     });
 
     document.getElementById('budget-form')?.addEventListener('submit', handleBudgetSubmit);
@@ -415,14 +440,16 @@ document.addEventListener('DOMContentLoaded', () => {
     const categorySelect = document.getElementById('category-select');
     
     const budgetCategorySelect = document.getElementById('budget-category');
+    // 예산 카테고리 (저축은 예산 대상이 아닐 수 있어 기타지출을 제외한 지출 카테고리만 제공)
     renderCategoryOptions(budgetCategorySelect, EXPENSE_CATEGORIES.filter(c => c.id !== 10), false); 
 
     transactionTypeInputs.forEach(input => {
         input.addEventListener('change', handleTransactionTypeChange);
     });
+    // 기본으로 지출 카테고리를 표시
     renderCategoryOptions(categorySelect, EXPENSE_CATEGORIES, true); 
 
-    // 7. 마이페이지 이동 이벤트 등록 (⭐하드코딩 인라인 구현)
+    // 7. 마이페이지 이동 이벤트 등록 (세션 유지)
     document.getElementById('mypage-btn')?.addEventListener('click', (e) => {
         e.preventDefault(); 
 
@@ -432,8 +459,22 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
         
-        // 함수 호출 없이, 여기서 직접 파라미터를 인코딩하고 mypage.html로 이동
         const encodedUsername = encodeURIComponent(CURRENT_USERNAME);
+        // 마이페이지로 user_id와 username을 포함하여 이동
         window.location.href = `mypage.html?user_id=${CURRENT_USER_ID}&username=${encodedUsername}`;
+    });
+    
+    // 8. 전체 내역 조회 버튼 이벤트 등록 (이전 요청사항 반영)
+    document.getElementById('view-all-history-btn')?.addEventListener('click', (e) => {
+        e.preventDefault(); 
+
+        if (!CURRENT_USER_ID || !CURRENT_USERNAME) {
+            alert("로그인 정보가 유효하지 않습니다. 먼저 로그인해 주세요.");
+            return;
+        }
+        
+        const encodedUsername = encodeURIComponent(CURRENT_USERNAME);
+        // 전체 내역 페이지로 user_id와 username을 포함하여 이동
+        window.location.href = `full_history.html?user_id=${CURRENT_USER_ID}&username=${encodedUsername}`;
     });
 });
