@@ -4,16 +4,18 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>마이페이지</title>
+    
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
+    
     <script>
-        // Tailwind configuration for custom styles and font
+        // Tailwind configuration
         tailwind.config = {
             theme: {
                 extend: {
                     colors: {
-                        'primary-500': '#3b82f6', // blue-500
-                        'danger-500': '#ef4444', // red-500
+                        'primary-500': '#3b82f6', 
+                        'danger-500': '#ef4444', 
                     },
                     fontFamily: {
                         sans: ['Inter', 'sans-serif'],
@@ -22,31 +24,104 @@
             }
         }
     </script>
+    
+    <script src="mypage.js" defer></script> 
+
     <style>
-        .mypage-container { max-width: 700px; margin: 0 auto; padding: 20px; }
-        .card-style { background-color: white; border-radius: 8px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05); padding: 20px; margin-bottom: 20px; border: 1px solid #e5e7eb; }
-        .small-btn { padding: 8px 16px; font-size: 0.875rem; border-radius: 4px; background-color: #f3f4f6; color: #1f2937; transition: background-color 0.15s; }
-        .small-btn:hover { background-color: #e5e7eb; }
-        .action-btn { width: 100%; padding: 12px; border-radius: 6px; font-weight: 600; margin-top: 10px; transition: background-color 0.15s; }
-        .primary-action { background-color: #3b82f6; color: white; }
-        .primary-action:hover { background-color: #2563eb; }
-        .danger-action { background-color: #ef4444; color: white; }
-        .danger-action:hover { background-color: #dc2626; }
-        .back-to-main-btn { background-color: #6b7280; color: white; }
-        .back-to-main-btn:hover { background-color: #4b5563; }
+        /* 기본 스타일은 그대로 유지합니다. */
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f3f4f6; /* gray-100 */
+        }
+        .mypage-container {
+            max-width: 900px;
+            margin: 40px auto;
+            padding: 20px;
+            background-color: #ffffff;
+            border-radius: 1rem; /* rounded-xl */
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05); /* shadow-xl */
+        }
+        .card-style {
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            background-color: #f9fafb; /* gray-50 */
+            border-radius: 0.75rem; /* rounded-lg */
+            border: 1px solid #e5e7eb; /* border-gray-200 */
+        }
+        .action-btn {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            font-size: 1rem;
+            font-weight: 600; /* font-semibold */
+            border-radius: 0.5rem; /* rounded-lg */
+            transition: all 0.2s;
+            margin-top: 0.5rem;
+        }
+        .primary-action {
+            background-color: #3b82f6; /* primary-500 */
+            color: white;
+        }
+        .primary-action:hover {
+            background-color: #2563eb; /* blue-600 */
+        }
+        .danger-action {
+            background-color: #ef4444; /* danger-500 */
+            color: white;
+        }
+        .danger-action:hover {
+            background-color: #dc2626; /* red-600 */
+        }
+        .back-to-main-btn {
+            background-color: #6b7280; /* gray-500 */
+            color: white;
+        }
+        .back-to-main-btn:hover {
+            background-color: #4b5563; /* gray-600 */
+        }
+        .small-btn {
+            padding: 0.25rem 0.75rem;
+            font-size: 0.875rem; /* text-sm */
+            border-radius: 0.5rem; /* rounded-lg */
+            background-color: #d1d5db; /* gray-300 */
+            color: #1f2937; /* gray-800 */
+            transition: background-color 0.2s;
+        }
+        .small-btn:hover {
+            background-color: #9ca3af; /* gray-400 */
+        }
     </style>
 </head>
 <body>
     <div class="mypage-container">
         <h2 class="text-3xl font-bold mb-6 text-gray-800">마이페이지</h2>
 
-        <section class="budget-goal-section card-style">
-            <h3 class="text-xl font-semibold mb-3 text-gray-700">나의 목표 예산</h3>
-            <div id="goal-display" class="flex justify-between items-center">
-                <p class="text-lg">현재 목표: <strong class="text-primary-500">로딩 중...</strong></p>
-                <button class="small-btn" onclick="handleGoalEdit()">수정</button>
+        <section class="user-profile-section card-style">
+            <h3 class="text-xl font-semibold mb-4 text-gray-700">회원 정보</h3>
+            <div class="space-y-4">
+                <div>
+                    <label for="profile-username" class="block text-sm font-medium text-gray-700">아이디</label>
+                    <input type="text" id="profile-username" value="로딩 중..." readonly 
+                            class="mt-1 block w-full rounded-md border border-gray-300 shadow-sm p-3 bg-gray-100 text-gray-600 cursor-not-allowed">
+                </div>
+                <div>
+                    <label for="profile-email" class="block text-sm font-medium text-gray-700">이메일</label>
+                    <input type="email" id="profile-email" value="로딩 중..." readonly 
+                            class="mt-1 block w-full rounded-md border border-gray-300 shadow-sm p-3 bg-gray-100 text-gray-600 cursor-not-allowed">
+                </div>
+                <div>
+                    <label for="profile-birth-year" class="block text-sm font-medium text-gray-700">출생 연도</label>
+                    <input type="text" id="profile-birth-year" value="로딩 중..." readonly 
+                            class="mt-1 block w-full rounded-md border border-gray-300 shadow-sm p-3 bg-gray-100 text-gray-600 cursor-not-allowed">
+                </div>
             </div>
         </section>
+        
+<section class="budget-goal-section card-style">
+    <h3 class="text-xl font-semibold mb-3 text-gray-700">나의 예산</h3>
+    <div id="goal-display" class="flex justify-between items-center">
+        <p id="goal-text" class="text-lg">현재 예산: <strong class="text-primary-500">...</strong></p> 
+    </div>
+</section>
 
         <section class="monthly-spending-section card-style">
             <h3 class="text-xl font-semibold mb-3 text-gray-700">월간 지출 현황 (그래프)</h3>
@@ -99,7 +174,5 @@
             </button>
         </section>
     </div>
-
-    <script src="mypage.js"></script>
 </body>
 </html>
