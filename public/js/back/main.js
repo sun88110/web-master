@@ -117,9 +117,12 @@ function renderTransactions(transactions) {
 
     transactions.forEach(tx => {
         const li = document.createElement('li');
-        const isIncome = tx.amount >= 0; 
+        // amount가 음수일 수 있으므로, type 기준으로 판단하거나 amount의 부호 기준으로 판단합니다.
+        // 현재 DB 설계상 amount가 지출일 때 음수로 들어가지 않고 type이 '지출'이라면, type을 사용해야 함.
+        // 여기서는 amount가 양수이면 수입, 음수이면 지출로 가정합니다. (대부분의 가계부 앱 방식)
+        const isIncome = tx.type === '수입' || tx.amount > 0; 
         const typeClass = isIncome ? 'income' : 'expense';
-        const sign = isIncome ? '+' : ''; 
+        const sign = isIncome ? '+' : '-'; 
         
         const categoryName = CATEGORIES_MAP.get(tx.category_id)?.name || '미분류';
         
@@ -143,7 +146,10 @@ async function loadInitialData() {
     if (!CURRENT_USER_ID) return; 
 
     try {
-        const response = await fetch(`${API_BASE}/api/data?user_id=${CURRENT_USER_ID}`); 
+        // ⭐ 수정 1: 캐시를 무시하고 항상 최신 데이터를 가져오도록 설정
+        const response = await fetch(`${API_BASE}/api/data?user_id=${CURRENT_USER_ID}`, {
+             cache: 'no-cache' 
+        }); 
         
         if (!response.ok) {
             const errorResult = await response.json().catch(() => ({ message: `HTTP 오류: ${response.status}` }));
@@ -157,7 +163,7 @@ async function loadInitialData() {
             const budgetValue = data.totalBudget || 0;
             const isNegative = budgetValue < 0;
             
-            const sign = isNegative ? '-' : '+';
+            const sign = isNegative ? '-' : ''; // 음수일 경우 formatCurrency에서 이미 처리되었으므로 빈 문자열
             const formattedAmount = formatCurrency(budgetValue); 
 
             totalBudgetEl.textContent = `${sign}${formattedAmount}`; 
@@ -239,7 +245,10 @@ function updateChart(data) {
 
     // 2. 차트 데이터 준비
     const dataMap = new Map();
+    // 지출(expense)만 차트에 반영합니다.
     analysisData.forEach(item => {
+         // 지출만 필터링 (DB에서 TOTAL_SPENT가 음수 또는 지출 카테고리인 경우)
+         // 지출은 amount가 DB에서 음수로 저장되는 경우 Math.abs()를 사용합니다.
         dataMap.set(item.CATEGORY_ID, Math.abs(item.TOTAL_SPENT) || 0); 
     });
 
@@ -361,7 +370,10 @@ async function handleTransactionSubmit(e) {
         type: type, 
         category_id: parseInt(categoryId), 
         description: description,
-        amount: amount,
+        // ⭐ 수정: 지출/수입 타입에 따라 amount에 부호를 적용하는 것은 서버가 처리하도록 하고, 
+        // 여기서는 사용자가 입력한 양의 금액을 그대로 전달합니다. (서버 로직에 따라 다름)
+        // 현재 로직은 amount를 양수로 전달하는 것으로 유지합니다.
+        amount: amount, 
         date: date, 
         user_id: CURRENT_USER_ID 
     };
@@ -378,8 +390,13 @@ async function handleTransactionSubmit(e) {
         if (response.ok) {
             alert(`거래가 성공적으로 등록되었습니다: ${type} ${formatCurrency(amount)}`);
             document.getElementById('transaction-form').reset();
-            renderCategoryOptions(document.getElementById('category-select'), EXPENSE_CATEGORIES, true);
+            // 기본 카테고리를 다시 '지출'로 초기화
             document.getElementById('type-expense').checked = true;
+            renderCategoryOptions(document.getElementById('category-select'), EXPENSE_CATEGORIES, true);
+            
+            // ⭐ 수정 2: 50ms 지연 후 데이터 로드 (서버의 잔액 계산 완료를 기다림) ⭐
+            await new Promise(resolve => setTimeout(resolve, 50)); 
+            
             loadInitialData(); 
         } else {
             throw new Error(result.message || '거래 등록에 실패했습니다.');
@@ -416,6 +433,8 @@ async function handleDeleteTransaction(e) {
         if (response.ok) {
             alert("거래가 성공적으로 삭제되었습니다.");
             listItem.remove(); 
+             // ⭐ 지연 후 데이터 로드 (서버의 잔액 계산 완료를 기다림) ⭐
+            await new Promise(resolve => setTimeout(resolve, 50)); 
             loadInitialData(); 
         } else {
             const result = await response.json().catch(() => ({ message: `HTTP 오류: ${response.status}` }));
