@@ -51,12 +51,13 @@ async function initialize() {
 }
 
 const app = express();
+// ⭐ CORS 설정: 모든 도메인 허용
 app.use(cors());
 app.use(express.json()); // 클라이언트에서 전송된 JSON 데이터를 처리하기 위해 필수
 app.use(express.static(path.join(__dirname))); // 정적 파일 라우팅 추가 (html 등 파일을 위해)
 
 // =======================================================
-// 📌 1. 회원 인증/정보 라우트 (/users) - 생략 없이 포함
+// 📌 1. 회원 인증/정보 라우트 (/users) - (생략)
 // =======================================================
 
 // 1.1. 회원 로그인 인증 (POST /users/login)
@@ -301,7 +302,7 @@ app.put('/users/password/:id', async (req, res) => {
 
 
 // =======================================================
-// 📌 2. 가계부 API 라우트 (/api/transactions) - 생략 없이 포함
+// 📌 2. 가계부 API 라우트 (/api/transactions 등)
 // =======================================================
 
 // 2.1. 거래 등록 (POST /api/transactions)
@@ -501,7 +502,7 @@ app.get('/api/categories', async (req, res) => {
 
 
 // -------------------------------------------------------
-// 2.5. 초기 대시보드 데이터 로딩 (GET /api/data) 
+// 2.5. ⭐⭐ 수정 완료: 초기 대시보드 데이터 로딩 (GET /api/data) ⭐⭐
 // -------------------------------------------------------
 app.get('/api/data', async (req, res) => {
     const USER_ID = parseInt(req.query.user_id);
@@ -517,7 +518,7 @@ app.get('/api/data', async (req, res) => {
         connection = await oracledb.getConnection(dbConfig.poolAlias);
         const currentMonth = getCurrentMonthYYYYMM();
 
-        // 1. 이번 달 총 예산 조회 
+        // 1. 이번 달 총 예산 조회
         const budgetSql = "SELECT BUDGET_AMOUNT FROM BUDGETS WHERE USER_ID = :userId AND BUDGET_MONTH = :currentMonth AND CATEGORY_ID IS NULL";
         const budgetResult = await connection.execute(budgetSql, {
             userId: USER_ID,
@@ -552,22 +553,46 @@ app.get('/api/data', async (req, res) => {
             date: row.TRANSACTION_DATE
         }));
 
-        // 4. 나이대 지출 분석 데이터 조회 (변경 없음)
-        const AGE_GROUP = '30대';
-        const analysisSql = "SELECT C.CATEGORY_NAME, S.TOTAL_SPENT, S.RANKING_ORDER FROM AGE_CATEGORY_SUMMARY S JOIN CATEGORIES C ON S.CATEGORY_ID = C.CATEGORY_ID WHERE S.AGE_GROUP = :ageGroup AND S.REPORT_MONTH = :currentMonth ORDER BY S.RANKING_ORDER ASC";
+        // 4. ⭐⭐ 수정된 지출 분석 데이터 조회 쿼리: 현재 사용자 지출만 집계 ⭐⭐
+        const analysisSql = `
+            SELECT
+                T.CATEGORY_ID,
+                C.CATEGORY_NAME,
+                ABS(SUM(T.AMOUNT)) AS TOTAL_SPENT,
+                RANK() OVER (ORDER BY ABS(SUM(T.AMOUNT)) DESC) AS RANKING_ORDER
+            FROM
+                TRANSACTIONS T
+            JOIN
+                CATEGORIES C ON T.CATEGORY_ID = C.CATEGORY_ID
+            WHERE
+                T.USER_ID = :userId
+                AND T.AMOUNT < 0                      -- 지출만 (음수인 경우)
+                AND TO_CHAR(T.TRANSACTION_DATE, 'YYYYMM') = :currentMonth
+            GROUP BY
+                T.CATEGORY_ID, C.CATEGORY_NAME
+            ORDER BY
+                TOTAL_SPENT DESC
+        `;
 
         const analysisResult = await connection.execute(analysisSql, {
-            ageGroup: AGE_GROUP,
+            userId: USER_ID,
             currentMonth: currentMonth
         });
-        const categoryAnalysis = analysisResult.rows;
 
+        // 프론트엔드의 기존 필드명과 일치하도록 매핑
+        const categoryAnalysis = analysisResult.rows.map(row => ({
+            CATEGORY_ID: row.CATEGORY_ID,
+            CATEGORY_NAME: row.CATEGORY_NAME,
+            TOTAL_SPENT: row.TOTAL_SPENT,
+            RANKING_ORDER: row.RANKING_ORDER
+        }));
+        
+        // 5. 응답 데이터 구성 (userAgeGroup 제거)
         res.status(200).json({
             success: true,
             totalBudget: totalBalance,
             recentTransactions: recentTransactions,
             categoryAnalysis: categoryAnalysis,
-            userAgeGroup: AGE_GROUP,
             reportMonth: currentMonth
         });
 
@@ -582,7 +607,7 @@ app.get('/api/data', async (req, res) => {
     }
 });
 // -------------------------------------------------------
-// 2.6. 전체 거래 내역 조회 및 필터링 (POST /api/transactions/history) 
+// 2.6. 전체 거래 내역 조회 및 필터링 (POST /api/transactions/history) - (생략)
 // -------------------------------------------------------
 app.post('/api/transactions/history', async (req, res) => {
     // 클라이언트에서 전송되는 필터 및 페이지네이션 정보
@@ -648,10 +673,6 @@ app.post('/api/transactions/history', async (req, res) => {
         // 🚨 ORA-00923 방지를 위해 문자열 연결(+) 사용
         const countSql = "SELECT COUNT(*) AS TOTAL_COUNT FROM TRANSACTIONS T" + whereKeyword + whereClause;
 
-        console.log("DEBUG SQL (Count):", countSql);
-        console.log("DEBUG BINDS:", baseBinds);
-
-        // 🚨 678행 근처: countSql 실행
         const countResult = await connection.execute(countSql, baseBinds);
         const totalCount = countResult.rows[0].TOTAL_COUNT;
 
@@ -665,8 +686,6 @@ app.post('/api/transactions/history', async (req, res) => {
 
         // 4. 페이지네이션을 제거하고 필터링된 모든 거래 내역 조회
         // 🚨 historySql도 일반 문자열 연결로 변경하여 공백 문제 완벽 제거
-        console.log('whereKeyword: ', whereKeyword);
-        console.log('whereClause: ', whereClause);
         const historySql = `
 SELECT T.TRANSACTION_ID AS ID, T.AMOUNT, T.DESCRIPTION, T.CATEGORY_ID, TO_CHAR(T.TRANSACTION_DATE, 'YYYY-MM-DD') AS "DATE"
 FROM TRANSACTIONS T${whereKeyword}${whereClause} 
