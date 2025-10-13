@@ -11,13 +11,29 @@ const CATEGORIES_MAP = [
     { id: 10, name: '기타' },
 ];
 
+const CHART_COLORS = [
+    '#3b82f6', // primary-500 (Blue)
+    '#ef4444', // danger-500 (Red)
+    '#f97316', // Orange
+    '#22c55e', // Green
+    '#a855f7', // Purple
+    '#facc15', // Yellow
+    '#06b6d4', // Cyan
+    '#ec4899', // Pink
+    '#6b7280', // Gray
+    '#84cc16', // Lime
+];
+
 const API_BASE = 'http://localhost:3000'; 
 let CURRENT_USER_ID = null;
 let CURRENT_USERNAME = null;
+let myChartInstance = null; // Chart.js 인스턴스를 저장할 변수
 
 function formatCurrency(amount) {
     if (isNaN(amount) || amount === null) return '0원';
-    return new Intl.NumberFormat('ko-KR').format(amount) + '원';
+    // 금액이 음수일 경우 양수로 변환하여 포맷팅
+    const absoluteAmount = Math.abs(amount);
+    return new Intl.NumberFormat('ko-KR').format(absoluteAmount) + '원';
 }
 
 function handleFetchError(error, defaultMsg) {
@@ -99,7 +115,8 @@ async function loadMyPageData() {
             console.error("사용자 프로필 로딩 실패:", userResponse.status);
         }
         
-        // 2. 예산 잔액 및 최근 거래 내역 로딩
+        // 2. 예산 잔액, 최근 거래 내역, 차트 데이터 로딩
+        // 서버의 /api/data 엔드포인트는 모든 필요한 정보를 한번에 제공합니다.
         const dataResponse = await fetch(`${API_BASE}/api/data?user_id=${CURRENT_USER_ID}`, {
             cache: 'no-cache' 
         });
@@ -107,8 +124,13 @@ async function loadMyPageData() {
         if (dataResponse.ok) {
             const data = await dataResponse.json();
             const totalBalance = data.totalBudget || data.balance || data.remaining || 0; 
+            
+            // UI 업데이트
             updateGoalDisplay(totalBalance); 
             renderTransactionTable(data.recentTransactions || []);
+            
+            // ⭐ 지출 분석 차트 및 목록 업데이트 ⭐
+            updateSpendingAnalysis(data.categoryAnalysis || []);
 
         } else {
             updateGoalDisplay('API 연결 실패 (잔액 로드 불가)'); 
@@ -120,6 +142,98 @@ async function loadMyPageData() {
     }
 }
 
+// =======================================================
+// ⭐ 지출 분석 차트 및 목록 렌더링 함수 ⭐
+// =======================================================
+
+function updateSpendingAnalysis(categoryAnalysis) {
+    const topCategoryListEl = document.getElementById('top-category-list');
+    
+    // 1. TOP 5 목록 렌더링
+    topCategoryListEl.innerHTML = ''; 
+    
+    if (categoryAnalysis.length === 0) {
+        topCategoryListEl.innerHTML = '<li class="text-gray-500">이번 달 지출 내역이 없습니다.</li>';
+    } else {
+        // TOP 5 항목만 표시 (서버에서 이미 순위별로 정렬됨)
+        categoryAnalysis.slice(0, 5).forEach((item, index) => {
+            const color = CHART_COLORS[index % CHART_COLORS.length];
+            const percentage = (item.TOTAL_SPENT / categoryAnalysis.reduce((sum, current) => sum + current.TOTAL_SPENT, 0)) * 100;
+
+            topCategoryListEl.innerHTML += `
+                <li class="flex justify-between items-center p-2 rounded-md bg-white border border-gray-200">
+                    <div class="flex items-center space-x-2">
+                        <span class="inline-block w-3 h-3 rounded-full" style="background-color: ${color};"></span>
+                        <span class="font-medium text-gray-800">${item.CATEGORY_NAME}</span>
+                    </div>
+                    <span class="text-sm font-semibold text-gray-700">${formatCurrency(item.TOTAL_SPENT)} (${percentage.toFixed(1)}%)</span>
+                </li>
+            `;
+        });
+    }
+
+    // 2. 파이 차트 업데이트 (Chart.js)
+    const ctx = document.getElementById('age-analysis-chart');
+
+    // Chart.js 데이터 준비
+    const chartLabels = categoryAnalysis.map(item => item.CATEGORY_NAME);
+    const chartData = categoryAnalysis.map(item => item.TOTAL_SPENT);
+    const chartColors = CHART_COLORS.slice(0, chartData.length);
+
+    if (myChartInstance) {
+        // 기존 차트가 있으면 데이터만 업데이트
+        myChartInstance.data.labels = chartLabels;
+        myChartInstance.data.datasets[0].data = chartData;
+        myChartInstance.data.datasets[0].backgroundColor = chartColors;
+        myChartInstance.update();
+    } else if (ctx) {
+        // 기존 차트가 없으면 새로 생성
+        myChartInstance = new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                labels: chartLabels,
+                datasets: [{
+                    data: chartData,
+                    backgroundColor: chartColors,
+                    hoverOffset: 10
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: {
+                            padding: 15,
+                            font: { size: 12 }
+                        }
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                let label = context.label || '';
+                                if (label) {
+                                    label += ': ';
+                                }
+                                if (context.parsed !== null) {
+                                    label += formatCurrency(context.parsed);
+                                }
+                                return label;
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    }
+}
+
+
+// =======================================================
+// 기존 UI 업데이트 함수 (변화 없음)
+// =======================================================
+
 /**
  * 예산/잔액 UI 업데이트
  */
@@ -128,7 +242,7 @@ function updateGoalDisplay(balanceAmount) {
     
     if (goalTextEl) {
         if (typeof balanceAmount === 'string' || balanceAmount instanceof String) {
-            goalTextEl.innerHTML = `<span style="color: #ef4444;">${balanceAmount}</span>`;
+            goalTextEl.innerHTML = `현재 예산: <strong style="color: #ef4444;">${balanceAmount}</strong>`;
             return;
         }
 
@@ -173,7 +287,8 @@ function renderTransactionTable(transactions) {
     
     transactions.forEach(tx => { 
         const category = CATEGORIES_MAP.find(c => c.id === tx.category_id)?.name || '미분류';
-        const isExpense = tx.type === '지출';
+        // amount가 DB에서 음수로 들어왔는지 확인하는 대신, 'TYPE' 필드를 사용하는 것이 더 정확
+        const isExpense = tx.type === '지출'; 
         const amountColor = isExpense ? '#ef4444' : '#3b82f6'; 
         const sign = isExpense ? '-' : '+'; 
 
@@ -183,7 +298,7 @@ function renderTransactionTable(transactions) {
                 <td class="px-4 sm:px-6 py-4 whitespace-nowrap">${category}</td>
                 <td class="px-4 sm:px-6 py-4 truncate max-w-xs">${tx.description}</td>
                 <td class="px-4 sm:px-6 py-4 whitespace-nowrap text-right font-semibold" style="color: ${amountColor};">
-                    ${sign} ${formatCurrency(Math.abs(tx.amount))}
+                    ${sign} ${formatCurrency(tx.amount)}
                 </td>
             </tr>
         `;
@@ -191,7 +306,7 @@ function renderTransactionTable(transactions) {
 }
 
 // =======================================================
-// 비밀번호 변경 기능 구현
+// 비밀번호 변경 기능 구현 (변화 없음)
 // =======================================================
 
 /**
@@ -249,7 +364,7 @@ async function handlePasswordChange(e) {
 
 
 // =======================================================
-// 거래 내역 삭제 (초기화) 로직
+// 거래 내역 삭제 (초기화) 로직 (변화 없음)
 // =======================================================
 
 function handleDeleteHistory() { 
@@ -260,10 +375,15 @@ function handleDeleteHistory() {
 }
 
 // =======================================================
-// 초기화 및 이벤트 리스너 등록
+// 초기화 및 이벤트 리스너 등록 (변화 없음)
 // =======================================================
 
 document.addEventListener('DOMContentLoaded', () => {
+    // HTML에 정의된 togglePasswordSection 함수가 전역 스코프에 등록되어 있어야 함
+    if (typeof window.togglePasswordSection === 'undefined') {
+        window.togglePasswordSection = togglePasswordSection;
+    }
+
     if (!checkLoginStatus()) {
         return; 
     }

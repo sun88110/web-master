@@ -28,7 +28,7 @@
     <script src="mypage.js" defer></script> 
 
     <style>
-        /* 기본 스타일은 그대로 유지합니다. */
+        /* 기본 스타일을 위한 사용자 정의 CSS 및 Tailwind 클래스 매핑 */
         body {
             font-family: 'Inter', sans-serif;
             background-color: #f3f4f6; /* gray-100 */
@@ -89,6 +89,11 @@
         .small-btn:hover {
             background-color: #9ca3af; /* gray-400 */
         }
+        /* 지출 그래프 섹션을 위한 추가 스타일 */
+        .chart-container-style {
+            max-width: 300px; /* 차트 크기 제한 */
+            margin: 0 auto 1.5rem;
+        }
     </style>
 </head>
 <body>
@@ -119,15 +124,27 @@
         <section class="budget-goal-section card-style">
             <h3 class="text-xl font-semibold mb-3 text-gray-700">나의 예산</h3>
             <div id="goal-display" class="flex justify-between items-center">
-                <p id="goal-text" class="text-lg">현재 예산: <strong class="text-primary-500">...</strong></p> 
+                <p id="goal-text" class="text-lg">총 예산: <strong class="text-primary-500">로딩 중...</strong></p> 
             </div>
         </section>
 
         <section class="monthly-spending-section card-style">
-            <h3 class="text-xl font-semibold mb-3 text-gray-700">월간 지출 현황 (그래프)</h3>
-            <div class="chart-area h-48 bg-gray-50 flex items-center justify-center border border-gray-200 rounded-md">
-                <p class="text-gray-500">이번 달 지출 현황 그래프 (구현 예정)</p>
+            <h3 class="text-xl font-semibold mb-3 text-gray-700">월간 지출 현황 분석</h3>
+            
+            <div id="user-age-group-info" class="text-center mb-6">
+                <p class="text-gray-500 mb-4">
+                    현재 나의 지출 카테고리 분포입니다.
+                </p>
+                <div class="chart-container-style">
+                    <canvas id="age-analysis-chart"></canvas>
+                </div>
             </div>
+
+            <h4 class="text-lg font-semibold mb-3 text-gray-700 border-t pt-3">🏆 지출이 가장 큰 카테고리 (TOP 5)</h4>
+            <ul id="top-category-list" class="space-y-2">
+                <li class="text-gray-500">데이터를 로드하는 중...</li>
+            </ul>
+
         </section>
 
         <section class="transaction-history-section card-style">
@@ -142,7 +159,7 @@
                             <th scope="col" class="px-4 sm:px-6 py-3 font-medium text-right">금액</th>
                         </tr>
                     </thead>
-                    <tbody class="divide-y divide-gray-200 bg-white">
+                    <tbody id="recent-transactions-body" class="divide-y divide-gray-200 bg-white">
                         <tr class="hover:bg-gray-50">
                             <td colspan="4" class="px-4 sm:px-6 py-4 whitespace-nowrap text-center text-gray-500">데이터를 로드하는 중...</td>
                         </tr>
