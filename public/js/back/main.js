@@ -22,7 +22,7 @@ const CATEGORIES_MAP = new Map();
     CATEGORIES_MAP.set(c.id, { name: c.name, type: type });
 });
 
-const API_BASE = 'http://localhost:3000'; 
+const API_BASE = 'http://192.168.0.9:3000'; 
 
 // 로컬 스토리지를 통해 현재 사용자 정보 로드
 let CURRENT_USER_ID = localStorage.getItem('user_id') ? parseInt(localStorage.getItem('user_id')) : null;
@@ -104,6 +104,9 @@ function updateLoginUI() {
     }
 }
 
+/**
+ * 거래 내역을 렌더링하고, 금액 표시와 삭제 버튼을 정렬하기 위해 <div class="amount-group">으로 감쌉니다.
+ */
 function renderTransactions(transactions) {
     const ul = document.getElementById('transactions');
     if (!ul) return; 
@@ -117,9 +120,7 @@ function renderTransactions(transactions) {
 
     transactions.forEach(tx => {
         const li = document.createElement('li');
-        // amount가 음수일 수 있으므로, type 기준으로 판단하거나 amount의 부호 기준으로 판단합니다.
-        // 현재 DB 설계상 amount가 지출일 때 음수로 들어가지 않고 type이 '지출'이라면, type을 사용해야 함.
-        // 여기서는 amount가 양수이면 수입, 음수이면 지출로 가정합니다. (대부분의 가계부 앱 방식)
+        // amount가 양수이면 수입, 음수이면 지출로 가정합니다.
         const isIncome = tx.type === '수입' || tx.amount > 0; 
         const typeClass = isIncome ? 'income' : 'expense';
         const sign = isIncome ? '+' : '-'; 
@@ -131,10 +132,13 @@ function renderTransactions(transactions) {
         
         const displayDate = tx.date ? tx.date.substring(0, 10) : '날짜 미상';
         
+        // ⭐ 수정 부분: 금액과 삭제 버튼을 amount-group으로 묶음 ⭐
         li.innerHTML = `
             <span>${displayDate} | ${categoryName} | ${tx.description}</span> 
-            <strong class="amount-display">${sign}${formatCurrency(tx.amount)}</strong>
-            <button class="delete-btn">X</button>
+            <div class="amount-group"> 
+                <strong class="amount-display">${sign}${formatCurrency(tx.amount)}</strong>
+                <button class="delete-btn">X</button>
+            </div>
         `;
         ul.appendChild(li);
     });
@@ -247,8 +251,7 @@ function updateChart(data) {
     const dataMap = new Map();
     // 지출(expense)만 차트에 반영합니다.
     analysisData.forEach(item => {
-         // 지출만 필터링 (DB에서 TOTAL_SPENT가 음수 또는 지출 카테고리인 경우)
-         // 지출은 amount가 DB에서 음수로 저장되는 경우 Math.abs()를 사용합니다.
+        // 지출은 amount가 DB에서 음수로 저장되는 경우 Math.abs()를 사용합니다.
         dataMap.set(item.CATEGORY_ID, Math.abs(item.TOTAL_SPENT) || 0); 
     });
 
@@ -370,8 +373,6 @@ async function handleTransactionSubmit(e) {
         type: type, 
         category_id: parseInt(categoryId), 
         description: description,
-        // ⭐ 수정: 지출/수입 타입에 따라 amount에 부호를 적용하는 것은 서버가 처리하도록 하고, 
-        // 여기서는 사용자가 입력한 양의 금액을 그대로 전달합니다. (서버 로직에 따라 다름)
         // 현재 로직은 amount를 양수로 전달하는 것으로 유지합니다.
         amount: amount, 
         date: date, 
@@ -433,7 +434,7 @@ async function handleDeleteTransaction(e) {
         if (response.ok) {
             alert("거래가 성공적으로 삭제되었습니다.");
             listItem.remove(); 
-             // ⭐ 지연 후 데이터 로드 (서버의 잔액 계산 완료를 기다림) ⭐
+            // ⭐ 지연 후 데이터 로드 (서버의 잔액 계산 완료를 기다림) ⭐
             await new Promise(resolve => setTimeout(resolve, 50)); 
             loadInitialData(); 
         } else {

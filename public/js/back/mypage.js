@@ -24,7 +24,7 @@ const CHART_COLORS = [
     '#84cc16', // Lime
 ];
 
-const API_BASE = 'http://localhost:3000'; 
+const API_BASE = 'http://192.168.0.9:3000'; 
 let CURRENT_USER_ID = null;
 let CURRENT_USERNAME = null;
 let myChartInstance = null; // Chart.js 인스턴스를 저장할 변수

@@ -30,7 +30,7 @@ document.getElementById('register-form').addEventListener('submit', function(e) 
 
     // 4. fetch API를 사용하여 서버에 POST 요청
     // 엔드포인트를 회원가입에 맞게 '/users/register'로 변경
-    fetch('http://localhost:3000/users/register', { 
+    fetch('http://192.168.0.9:3000/users/register', { 
         method: 'POST',
         headers: { 
             'Content-Type': 'application/json;charset=utf-8' 

@@ -16,7 +16,7 @@ document.getElementById('login-form').addEventListener('submit', function(e) {
         password: password,
     };
 
-    fetch('http://localhost:3000/users/login', { 
+    fetch('http://192.168.0.9:3000/users/login', { 
         method: 'POST',
         headers: { 
             'Content-Type': 'application/json;charset=utf-8' 

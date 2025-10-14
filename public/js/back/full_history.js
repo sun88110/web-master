@@ -3,7 +3,7 @@
 // ----------------------------------------------------
 // [Node.js/Oracle 환경] 상수 및 전역 변수 설정
 // ----------------------------------------------------
-const BASE_API_URL = 'http://localhost:3000/api/transactions'; 
+const BASE_API_URL = 'http://192.168.0.9:3000/api/transactions'; 
 
 // main.js와 동일한 카테고리 정의 (일관성 유지)
 const EXPENSE_CATEGORIES = [

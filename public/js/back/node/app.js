@@ -56,6 +56,10 @@ app.use(cors());
 app.use(express.json()); // 클라이언트에서 전송된 JSON 데이터를 처리하기 위해 필수
 app.use(express.static(path.join(__dirname))); // 정적 파일 라우팅 추가 (html 등 파일을 위해)
 
+// ⭐⭐⭐ 추가: 프록시 서버를 신뢰하여 클라이언트의 실제 IP를 req.ip로 가져오도록 설정
+app.set('trust proxy', true); 
+// ⭐⭐⭐
+
 // =======================================================
 // 📌 1. 회원 인증/정보 라우트 (/users) - (생략)
 // =======================================================
@@ -307,6 +311,9 @@ app.put('/users/password/:id', async (req, res) => {
 
 // 2.1. 거래 등록 (POST /api/transactions)
 app.post('/api/transactions', async (req, res) => {
+    // ⭐ 클라이언트 IP 주소 가져오기
+    const CLIENT_IP = req.ip; 
+    
     const {
         type,
         category_id,
@@ -330,7 +337,8 @@ app.post('/api/transactions', async (req, res) => {
 
         connection = await oracledb.getConnection(dbConfig.poolAlias);
 
-        const sql = "INSERT INTO TRANSACTIONS (USER_ID, CATEGORY_ID, \"TRANSACTION_DATE\", AMOUNT, DESCRIPTION, \"TYPE\") VALUES (:user_id, :category_id, TO_DATE(:txn_date_val, 'YYYY-MM-DD'), :txn_amount, :description, :txn_type_val)";
+        // ⭐ SQL 수정: CLIENT_IP 컬럼 추가 (DB에 CLIENT_IP 컬럼이 있다고 가정)
+        const sql = "INSERT INTO TRANSACTIONS (USER_ID, CATEGORY_ID, \"TRANSACTION_DATE\", AMOUNT, DESCRIPTION, \"TYPE\", CLIENT_IP) VALUES (:user_id, :category_id, TO_DATE(:txn_date_val, 'YYYY-MM-DD'), :txn_amount, :description, :txn_type_val, :client_ip)";
 
         const binds = {
             user_id: USER_ID_TO_USE,
@@ -338,7 +346,9 @@ app.post('/api/transactions', async (req, res) => {
             txn_date_val: date, // 'YYYY-MM-DD' 문자열 그대로 전달
             txn_amount: DB_TYPE === '지출' ? -parsed_amount : parsed_amount, // DB에 지출은 음수, 수입은 양수로 저장 (분석 용이)
             description: description,
-            txn_type_val: DB_TYPE
+            txn_type_val: DB_TYPE,
+            // ⭐ binds 수정: CLIENT_IP 추가
+            client_ip: CLIENT_IP
         };
 
         const result = await connection.execute(sql, binds, {
@@ -502,7 +512,7 @@ app.get('/api/categories', async (req, res) => {
 
 
 // -------------------------------------------------------
-// 2.5. ⭐⭐ 수정 완료: 초기 대시보드 데이터 로딩 (GET /api/data) ⭐⭐
+// 2.5. 초기 대시보드 데이터 로딩 (GET /api/data)
 // -------------------------------------------------------
 app.get('/api/data', async (req, res) => {
     const USER_ID = parseInt(req.query.user_id);
@@ -553,7 +563,7 @@ app.get('/api/data', async (req, res) => {
             date: row.TRANSACTION_DATE
         }));
 
-        // 4. ⭐⭐ 수정된 지출 분석 데이터 조회 쿼리: 현재 사용자 지출만 집계 ⭐⭐
+        // 4. 지출 분석 데이터 조회 쿼리: 현재 사용자 지출만 집계
         const analysisSql = `
             SELECT
                 T.CATEGORY_ID,
@@ -722,12 +732,16 @@ ORDER BY T.TRANSACTION_DATE DESC, T.TRANSACTION_ID DESC
 // -------------------------------------------------------
 
 const port = 3000;
+const host = '0.0.0.0'; // ⭐⭐⭐ 다른 PC에서 접속 허용을 위해 모든 인터페이스(IP)에서 수신 설정
+
 // 5. 서버 시작
 async function startServer() {
-    await initialize();
-    app.listen(port, () => {
-        console.log(`Server is listening on http://localhost:${port}`);
-    });
+    await initialize();
+    // ⭐ app.listen에 host 변수 추가
+    app.listen(port, host, () => { 
+        console.log(`Server is listening on http://192.168.0.9:${port}`);
+        console.log(`Access this server from other devices using its network IP (e.g., http://192.168.0.9:${port})`);
+    });
 }
 
 startServer();
