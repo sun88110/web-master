@@ -1,5 +1,39 @@
-table {
+.container {
   width: 70%;
+  margin: 0 auto;
+}
+
+header h5 span {
+  font-weight: bold;
+  color: blue;
+  font-size: large;
+}
+
+.board-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.search-box {
+  display: flex;
+  gap: 5px;
+}
+
+.search-box select,
+.search-box input {
+  padding: 5px;
+}
+
+.search-box button {
+  padding: 5px 10px;
+  cursor: pointer;
+  background-color: skyblue;
+}
+
+table {
+  width: 100%;
   border-top: 1px solid black;
   border-bottom: 1px solid black;
   text-align: center;
@@ -45,4 +79,41 @@ tr td div {
   height: 16px;
   background: url("clip.png") no-repeat center/contain;
   margin-left: 5px;
+}
+
+.board-footer {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 15px;
+}
+
+.left-buttons,
+.right-buttons {
+  display: flex;
+  gap: 5px;
+}
+
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.page-numbers a.active {
+  background-color: skyblue;
+  color: white;
+  font-weight: bold;
+}
+
+.pagination button {
+  padding: 5px 10px;
+  cursor: pointer;
+}
+
+.page-numbers a.active {
+  background-color: skyblue;
+  color: white;
+  font-weight: bold;
 }
