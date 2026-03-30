@@ -9,7 +9,7 @@
   <body>
     <div class="container">
       <header class="board-header">
-        <h5>총 <span>7</span>건</h5>
+        <h3>총 <span>7</span>건</h3>
 
         <div class="search-box">
           <select>
@@ -17,7 +17,7 @@
             <option>내용</option>
           </select>
           <input type="text" />
-          <button>검색</button>
+          <button class="btn">검색</button>
         </div>
       </header>
 
@@ -38,7 +38,7 @@
           </td>
           <td>2026.03.27</td>
           <td>1</td>
-          <td>📎</td>
+          <td class="attach"></td>
         </tr>
         <tr>
           <td>10</td>
@@ -46,8 +46,7 @@
             <div>
               에듀나비 웹진 50호 퀴즈 이벤트 당첨 결과 안내에듀나비 웹진 50호
               퀴즈 이벤트 당첨 결과 안내 ㅇㄻㄹㅇㅁㄻㄹ<span class="new"
-                >N</span
-              >
+                >N</span>
             </div>
           </td>
           <td>2026.03.27</td>
@@ -86,18 +85,19 @@
 
       <div class="board-footer">
         <div class="left-buttons">
-          <button>이전</button>
-          <button>목록</button>
+          <button class="btn">이전</button>
+          <button class="btn">목록</button>
         </div>
 
         <div class="right-buttons">
-          <button>글쓰기</button>
-          <button>삭제</button>
+          <button class="btn">글쓰기</button>
+          <button class="btn">삭제</button>
         </div>
       </div>
 
       <div class="pagination">
-        <button class="prev">이전</button>
+        <button class="prev">&lt;&lt;</button>
+        <button class="prev">&lt;</button>
 
         <div class="page-numbers">
           <a href="#" class="active">1</a>
@@ -112,7 +112,8 @@
           <a href="#">10</a>
         </div>
 
-        <button class="next">다음</button>
+        <button class="next">&gt;</button>
+        <button class="prev">&gt;&gt;</button>
       </div>
     </div>
   </body>

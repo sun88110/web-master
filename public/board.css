@@ -1,9 +1,19 @@
+/* 공통 버튼 */
+.btn {
+  padding: 5px 10px;
+  cursor: pointer;
+  background-color: skyblue;
+  border: 1px solid blue;
+}
+
+/* 바디 */
+
 .container {
   width: 70%;
   margin: 0 auto;
 }
 
-header h5 span {
+header h3 span {
   font-weight: bold;
   color: blue;
   font-size: large;
@@ -26,11 +36,7 @@ header h5 span {
   padding: 5px;
 }
 
-.search-box button {
-  padding: 5px 10px;
-  cursor: pointer;
-  background-color: skyblue;
-}
+/* 테이블 */
 
 table {
   width: 100%;
@@ -41,8 +47,7 @@ table {
   table-layout: fixed;
 }
 
-table tr th {
-  text-align: center;
+table th {
   background-color: aqua;
   padding: 10px;
 }
@@ -56,7 +61,7 @@ tr td:nth-child(2) {
 }
 
 tr td div {
-  width: 68%;
+  max-width: 100%;
   text-align: left;
   white-space: nowrap;
   overflow: hidden;
@@ -77,9 +82,11 @@ tr td div {
   display: inline-block;
   width: 16px;
   height: 16px;
-  background: url("clip.png") no-repeat center/contain;
+  background: url("clip.png") no-repeat center / contain;
   margin-left: 5px;
 }
+
+/* 푸터 */
 
 .board-footer {
   display: flex;
@@ -93,27 +100,55 @@ tr td div {
   gap: 5px;
 }
 
+/* 페이징 */
+
 .pagination {
   display: flex;
   justify-content: center;
   align-items: center;
-  gap: 10px;
   margin-top: 20px;
-}
-
-.page-numbers a.active {
-  background-color: skyblue;
-  color: white;
-  font-weight: bold;
+  gap: 0;
 }
 
 .pagination button {
-  padding: 5px 10px;
+  appearance: none;
+  -webkit-appearance: none;
+  padding: 0;
+  margin: 0;
+  font: inherit;
   cursor: pointer;
 }
 
-.page-numbers a.active {
+.pagination a,
+.pagination button {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  box-sizing: border-box;
+  
+  width: 35px;
+  height: 35px;
+
+  border: 1px solid #ccc;
+  background-color: white;
+
+  text-decoration: none;
+  color: black;
+  font-size: 14px;
+}
+
+.pagination a:hover,
+.pagination button:hover {
+  background-color: #eee;
+}
+
+.pagination a.active {
   background-color: skyblue;
   color: white;
   font-weight: bold;
+  border-color: skyblue;
+}
+
+.page-numbers {
+  display: flex;
 }
