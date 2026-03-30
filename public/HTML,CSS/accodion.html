@@ -1,53 +1,49 @@
 <!DOCTYPE html>
 <html lang="ko">
+
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>아코디언 (jQuery)</title>
-  <link rel="stylesheet" href="accordion.css" />
-  <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+  <meta charset="UTF-8">
+  <title>아코디언 메뉴</title>
+  <link rel="stylesheet" href="accodion.css">
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </head>
+
 <body>
 
   <div class="accordion">
 
     <div class="accordion-item">
-      <button class="accordion-header">
-        타이틀입니다타이틀입니다타이틀입니다
+      <div class="accordion-header">
+        <div class="title">
+          <span>Q</span>
+          타이틀입니다타이틀입니다타이틀입니다
+        </div>
         <span class="arrow">▼</span>
-      </button>
-      <div class="accordion-body">
-        첫 번째 내용입니다.
+      </div>
+      <div class="accordion-content">
+        <span>A</span>
+        <p>설명 1입니다.</p>
       </div>
     </div>
 
     <div class="accordion-item">
-      <button class="accordion-header">
-        타이틀입니다타이틀입니다타이틀입니다타이틀입니다
+      <div class="accordion-header">
+        <div class="title">
+          <span>Q</span>
+          타이틀입니다타이틀입니다타이틀입니다타이틀입니다타이틀입니다타이틀입니다
+        </div>
         <span class="arrow">▼</span>
-      </button>
-      <div class="accordion-body">
-        두 번째 내용입니다. 
+      </div>
+      <div class="accordion-content">
+        <span>A</span>
+        <p>설명 2입니다.</p>
       </div>
     </div>
 
   </div>
 
-  <script>
-    $('.accordion-header').on('click', function () {
-      const $body = $(this).next('.accordion-body');
-      const $arrow = $(this).find('.arrow');
-
-      // 다른 항목 모두 닫기
-      $('.accordion-body').not($body).slideUp(300);
-      $('.arrow').not($arrow).css('transform', 'rotate(0deg)');
-
-      // 클릭한 항목 토글
-      $body.slideToggle(300);
-      const isOpen = $body.is(':visible');
-      $arrow.css('transform', isOpen ? 'rotate(180deg)' : 'rotate(0deg)');
-    });
-  </script>
+  <script src="accodion.js"></script>
 
 </body>
+
 </html>

@@ -10,7 +10,7 @@
 /* 바디 */
 
 .container {
-  width: 70%;
+  width: 1080px;
   margin: 0 auto;
 }
 
@@ -54,11 +54,12 @@ table th {
 }
 
 tr th:nth-child(2) {
-  width: 70%;
+  width: 60%;
 }
 
 tr td:nth-child(2) {
   text-align: left;
+   overflow: hidden;
 }
 
 tr td div {

@@ -1,76 +1,84 @@
-* {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
+/* 아코디언 공통 */
+.accordion {
+  width: 400px;
+  margin: 50px auto;
 }
 
-body {
-  font-family: 'Malgun Gothic', sans-serif;
-  background-color: #f4f6f8;
-  padding: 40px;
+.accordion-item {
+  border: 1px solid #ccc;
 }
 
-h1 {
-  margin-bottom: 20px;
-  font-size: 22px;
-}
-
-#Accordion_wrap {
-  max-width: 600px;
-}
-
-/* 질문 영역 */
-.que {
+/* 헤더 */
+.accordion-header {
   display: flex;
   justify-content: space-between;
-  align-items: center;
-  padding: 15px 20px;
-  background-color: skyblue;
-  border: 1px solid #ccc;
-  margin-bottom: 2px;
+  align-items: flex-start; /* 🔥 핵심 수정 */
+  background-color: #f1f1f1;
+  padding: 15px;
   cursor: pointer;
   font-weight: bold;
-  font-size: 15px;
 }
 
-.que:hover {
-  background-color: #5bbcd6;
-}
-
-/* 화살표 */
-.arrow-wrap {
+/* 제목 영역 */
+.title {
   display: flex;
-  flex-direction: column;
-  font-size: 12px;
+  align-items: flex-start; /* 🔥 이것도 중요 */
+  gap: 10px;
+  flex: 1;
+  word-break: break-all;
 }
 
-/* 기본: 아래 화살표 표시 */
-.arrow-top {
+/* Q 아이콘 위치 고정 */
+.accordion-header .title span {
+  margin-top: 3px;
+}
+.arrow {
+  font-size: 16px;
+  transition: transform 0.3s;
+  flex-shrink: 0;
+}
+
+.arrow.active {
+  transform: rotate(180deg);
+}
+
+.accordion-content.show {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.accordion-content {
   display: none;
+  padding: 15px;
+  padding-left: 25px;
+  background-color: #fff;
 }
 
-.arrow-bottom {
-  display: inline;
+/* Q/A 공통 */
+.accordion-header .title span,
+.accordion-content span {
+  display: inline-block;
+  width: 25px;
+  height: 25px;
+  line-height: 25px;
+  text-align: center;
+  border-radius: 50%;
+  color: white;
+  font-weight: bold;
 }
 
-/* on 상태: 위 화살표 표시 */
-.que.on .arrow-top {
-  display: inline;
+.accordion-header .title span {
+  background-color: green;
+  flex-shrink: 0; 
 }
 
-.que.on .arrow-bottom {
-  display: none;
+.accordion-content span {
+  background-color: red;
+  display: block; 
+  margin-bottom: 5px;
 }
 
-/* 답변 영역 */
-.anw {
-  display: none;
-  padding: 15px 20px;
-  background-color: white;
-  border: 1px solid #ccc;
-  border-top: none;
-  margin-bottom: 2px;
-  font-size: 14px;
-  color: #333;
-  line-height: 1.7;
+.accordion-content p {
+  margin: 0;
 }
